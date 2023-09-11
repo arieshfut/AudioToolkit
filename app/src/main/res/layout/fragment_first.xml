@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FirstFragment">
+
+    <!-- Audio Mode container -->
+    <LinearLayout
+        android:id="@+id/audioModeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/audioModeTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/modeParameters"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/audioModeSetTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/audio_mode" />
+
+        <Spinner
+            android:id="@+id/audioModeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/audioModeArray" />
+    </LinearLayout>
+
+    <!-- Audio record container -->
+    <LinearLayout
+        android:id="@+id/audioRecordContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioModeContainer">
+
+        <TextView
+            android:id="@+id/audioRecordTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/recordParameters"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Audio Source container -->
+    <LinearLayout
+        android:id="@+id/audioSourceContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioRecordContainer">
+
+        <TextView
+            android:id="@+id/audioSourceTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/audio_source" />
+
+        <Spinner
+            android:id="@+id/audioSourceSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/audioSourceArray" />
+    </LinearLayout>
+
+    <!-- Record sample rate container -->
+    <LinearLayout
+        android:id="@+id/sampleRateContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioSourceContainer">
+
+        <TextView
+            android:id="@+id/sampleRateTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/sample_rate" />
+
+        <Spinner
+            android:id="@+id/sampleRateSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/sampleRateArray" />
+    </LinearLayout>
+
+    <!-- Channel count container -->
+    <LinearLayout
+        android:id="@+id/channelCountContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sampleRateContainer">
+
+        <TextView
+            android:id="@+id/channelCountTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/channel_count" />
+
+        <Spinner
+            android:id="@+id/channelCountSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/channelCountArray" />
+    </LinearLayout>
+
+    <!-- 3A switch container -->
+    <LinearLayout
+        android:id="@+id/BuildIn3ASwitchContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/channelCountContainer">
+
+        <TextView
+            android:id="@+id/buildIn3ATitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/build_in_3a_switch" />
+
+        <Spinner
+            android:id="@+id/buildIn3ASpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/buildIn3A" />
+    </LinearLayout>
+
+    <!-- Audio share container -->
+    <LinearLayout
+        android:id="@+id/audioShareContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/BuildIn3ASwitchContainer">
+
+        <TextView
+            android:id="@+id/audioShareTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/sharedParameters"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Shared sample rate container -->
+    <LinearLayout
+        android:id="@+id/shareSampleContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioShareContainer">
+
+        <TextView
+            android:id="@+id/shareSampleTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/sample_rate" />
+
+        <Spinner
+            android:id="@+id/shareSampleSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/sampleRateArray" />
+    </LinearLayout>
+
+    <!-- Shared channel count container -->
+    <LinearLayout
+        android:id="@+id/shareChannelContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shareSampleContainer">
+
+        <TextView
+            android:id="@+id/shareChannelTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/channel_count" />
+
+        <Spinner
+            android:id="@+id/shareChannelSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/channelCountArray" />
+    </LinearLayout>
+
+    <!-- Shared usage container -->
+    <LinearLayout
+        android:id="@+id/shareUsageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shareChannelContainer">
+
+        <TextView
+            android:id="@+id/shareUsageTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/shared_usage" />
+
+        <Spinner
+            android:id="@+id/shareUsageSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/audioUsageArray" />
+    </LinearLayout>
+
+    <!-- Audio player container -->
+    <LinearLayout
+        android:id="@+id/audioPlayerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shareUsageContainer">
+
+        <TextView
+            android:id="@+id/audioPlayerTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/playerParameters"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Switch
+            android:id="@+id/audioTrackSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/needAudioTrack"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <!-- player device container -->
+    <LinearLayout
+        android:id="@+id/playerDeviceContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioPlayerContainer">
+
+        <TextView
+            android:id="@+id/playerDeviceTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/player_device" />
+
+        <Spinner
+            android:id="@+id/playerDeviceSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:entries="@array/playerDeviceArray" />
+
+        <TextView
+            android:id="@+id/playerFileTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/player_file" />
+
+        <Spinner
+            android:id="@+id/playerFileSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:entries="@array/playerFileArray" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/playerCorpusContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/playerDeviceContainer">
+
+        <TextView
+            android:id="@+id/UserCorpusTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/user_player_Corpus_default" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/recordSwitchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/playerCorpusContainer">
+
+        <Switch
+            android:id="@+id/recordSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/needRecording"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/shareSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="@string/needShare"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/playerSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="@string/needPlayer"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/audioTestContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/recordSwitchContainer">
+
+        <Button
+            android:id="@+id/button_audioTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:text="@string/audioTest"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/scoSwitchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/audioTestContainer">
+
+        <TextView
+            android:id="@+id/audio3AText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/build_in_3a"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <Switch
+            android:id="@+id/sco_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/sco_state_switch"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/micMuteSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/micMute"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <!-- audio volume container -->
+    <LinearLayout
+        android:id="@+id/audioVolumeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scoSwitchContainer">
+
+        <TextView
+            android:id="@+id/audioVolumeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/audioVolume"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <TextView
+            android:id="@+id/audioCallText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/audioCall"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <TextView
+            android:id="@+id/audioLatencyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/audioLatency"
+            app:layout_constraintLeft_toLeftOf="parent" />
+    </LinearLayout>
+
+    <!-- audio mic list container -->
+    <LinearLayout
+        android:id="@+id/audioMicListContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioVolumeContainer">
+
+        <TextView
+            android:id="@+id/audioMicListText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/micList"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </LinearLayout>
+
+    <!-- audio speaker list container -->
+    <LinearLayout
+        android:id="@+id/audioSpeakerListContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioMicListContainer">
+
+        <TextView
+            android:id="@+id/audioSpeakerListText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/spkList"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </LinearLayout>
+
+    <!-- audio record path container -->
+    <LinearLayout
+        android:id="@+id/audioRecordPathContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioSpeakerListContainer">
+
+        <TextView
+            android:id="@+id/audioRecordPathText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recordPath"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

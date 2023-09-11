@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">AudioToolkit</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">音频基本功能</string>
+    <string name="action_basic">基本功能</string>
+    <string name="second_fragment_label">音频预研功能</string>
+    <string name="action_pre_research">预研功能</string>
+    <string name="third_fragment_label">音频声学测试</string>
+    <string name="action_acoustic">声学测试</string>
+    <string name="action_about">使用说明</string>
+
+    <string name="aec_state_switch">内置3A</string>
+    <string name="button_aec_switch">开AEC</string>
+    <string name="textview_aec_state">AEC：%s</string>
+    <string name="sco_state_switch">SCO状态</string>
+    <string name="button_sco_switch">开SCO</string>
+    <string name="textview_sco_state">SCO：%s</string>
+    <string name="audioTest">开始测试</string>
+    <string name="audio_mode">AudioMode</string>
+    <string name="modeParameters">音频模式设置</string>
+    <string name="recordParameters">录音参数设置</string>
+    <string name="sharedParameters">共享参数设置</string>
+    <string name="playerParameters">播放参数设置</string>needAudioTrack
+    <string name="needAudioTrack">使用MediaPlayer</string>
+    <string name="audio_source">AudioSource</string>
+    <string name="sample_rate">SampleRate</string>
+    <string name="channel_count">ChannelCount</string>
+    <string name="build_in_3a_switch">内置3A算法</string>
+    <string name="build_in_3a">内置3A状态：%s</string>
+    <string name="shared_usage">Usage</string>
+    <string name="player_device">设备</string>
+    <string name="player_file">选择预置语料</string>
+    <string name="user_player_Corpus">选择文件</string>
+    <string name="user_player_Corpus_default">点我选择Wav文件或使用预置语料</string>
+    <string name="buffer_size_title">录屏</string>
+    <string name="needRecording">是否录音</string>
+    <string name="needShare">共享音频</string>
+    <string name="needPlayer">播放音频</string>
+    <string name="audioVolume">Volume：%s</string>
+    <string name="audioLatency">Latency：%s</string>
+    <string name="micList">麦克风设备</string>
+    <string name="spkList">扬声器设备</string>
+    <string name="recordPath">录音文件路径</string>
+    <string name="audioCall">通话状态：%s</string>
+    <string name="micMute">Mic静音</string>
+    <string name="audioState">查询音频状态</string>
+    <string name="preResearch">预研测试</string>
+    <string name="audioAlgorithm">音频算法测试</string>
+
+    <string name="audioEffect_PlaySet">播放设置</string>
+    <string name="audioEffect_Corpus">选择预置语料</string>
+    <string name="audioEffect_User_Corpus">打开文件</string>
+    <string name="audioEffect_User_Corpus_default">手动打开语料文件或使用默认语料</string>
+    <string name="audioEffect_AcousticMonitor">Acoustic Monitor</string>
+    <string name="audioEffect_AecTest">AEC测试</string>
+
+    <string name="preResearch_oboeParamSet">Oboe参数设置</string>
+    <string name="preResearch_oboeAudioApi">AudioApi</string>
+    <string name="preResearch_oboeRecordSample">采样率</string>
+    <string name="preResearch_oboeRecordChannel">声道</string>
+    <string name="preResearch_oboeRecordBit">Bit位</string>
+    <string name="preResearch_oboePlayerCorpus">选择语料</string>
+    <string name="preResearch_oboeDeviceRecord">采集设备</string>
+    <string name="preResearch_oboeDevicePlay">播放设备</string>
+    <string name="preResearch_oboeDeviceDefault">跟随系统</string>
+    <string name="preResearch_oboeTest">Oboe测试</string>
+
+    <string name="preResearch_sensitivity">灵敏度</string>
+    <string name="preResearch_autoSwitchEar">听筒自动检测</string>
+    <string name="preResearch_alsaCard">声卡ID</string>
+    <string name="preResearch_alsaDevice">设备ID</string>
+    <string name="preResearch_alsa_sample_rate">采样率</string>
+    <string name="preResearch_alsa_channel">声道</string>
+    <string name="preResearch_alsa_bit">Bit位</string>
+    <string name="preResearch_alsaCapture">开始ALSA采集</string>
+
+    <string name="toolkit_info">音频工具箱</string>
+    <string name="toolkit_version">版本：1.0\n版权：Aries\n声明：允许随意引用及修改，但禁止商用</string>
+
+</resources>
