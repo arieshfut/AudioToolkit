@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SecondFragment">
+
+    <!-- Oboe Param container -->
+    <LinearLayout
+        android:id="@+id/oboeParamContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/oboeParamTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeParamSet"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Record sample rate container -->
+    <LinearLayout
+        android:id="@+id/oboeAudioApiContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeParamContainer">
+
+        <TextView
+            android:id="@+id/oboeAudioApiTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeAudioApi" />
+
+        <Spinner
+            android:id="@+id/oboeAudioApiSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/oboeAudioApiArray" />
+    </LinearLayout>
+
+    <!-- Record sample rate container -->
+    <LinearLayout
+        android:id="@+id/oboeSampleRateContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeAudioApiContainer">
+
+        <TextView
+            android:id="@+id/oboeSampleRateTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeRecordSample" />
+
+        <Spinner
+            android:id="@+id/oboeSampleRateSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/sampleRateArray" />
+    </LinearLayout>
+
+    <!-- Channel count container -->
+    <LinearLayout
+        android:id="@+id/oboeChannelContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeSampleRateContainer">
+
+        <TextView
+            android:id="@+id/oboeChannelTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeRecordChannel" />
+
+        <Spinner
+            android:id="@+id/oboeChannelCountSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/oboeChannelCountArray" />
+    </LinearLayout>
+
+    <!-- Record Bit container -->
+    <LinearLayout
+        android:id="@+id/oboeRecordBitContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeChannelContainer">
+
+        <TextView
+            android:id="@+id/oboeRecordBitTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeRecordBit" />
+
+        <Spinner
+            android:id="@+id/oboeRecordBitSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/preResearch_obeoBit" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/oboeDeviceRecordContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeRecordBitContainer">
+
+        <TextView
+            android:id="@+id/oboeDeviceRecordTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeDeviceRecord" />
+
+        <Spinner
+            android:id="@+id/oboeDeviceRecordSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/recordDeviceArray" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/oboeDevicePlayContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeDeviceRecordContainer">
+
+        <TextView
+            android:id="@+id/oboeDevicePlayTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboeDevicePlay" />
+
+        <Spinner
+            android:id="@+id/oboeDevicePlaySpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/playerDeviceArray" />
+    </LinearLayout>
+
+    <!-- Audio Research Corpus container -->
+    <LinearLayout
+        android:id="@+id/ResearchCorpusContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboeDevicePlayContainer">
+
+        <TextView
+            android:id="@+id/playerFileTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_oboePlayerCorpus" />
+
+        <Spinner
+            android:id="@+id/playerFileSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/playerFileArray" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/oboeSwitchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/ResearchCorpusContainer">
+
+        <Switch
+            android:id="@+id/oboeRecordSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/needRecording"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/oboePlayerSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="@string/needPlayer"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/oboeTestContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/oboeSwitchContainer">
+
+        <Button
+            android:id="@+id/button_oboe_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:text="@string/preResearch_oboeTest"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <!-- Earpiece Parameter container -->
+    <LinearLayout
+        android:id="@+id/earpieceParameterContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/oboeTestContainer">
+
+        <TextView
+            android:id="@+id/earpieceParameterTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_sensitivity" />
+
+        <Spinner
+            android:id="@+id/EarpieceParameterSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:entries="@array/earpieceParameterArray" />
+    </LinearLayout>
+
+    <!-- Earpiece monitor container -->
+    <LinearLayout
+        android:id="@+id/earpieceMonitorContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/earpieceParameterContainer">
+
+        <Button
+            android:id="@+id/button_earpiece_monitor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/preResearch_autoSwitchEar"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <!-- alsa device container -->
+    <LinearLayout
+        android:id="@+id/alsaParameterContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/earpieceMonitorContainer">
+
+        <TextView
+            android:id="@+id/alsaCardText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_alsaCard" />
+
+        <Spinner
+            android:id="@+id/alsaCardSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:entries="@array/preResearch_alsaCard" />
+
+        <TextView
+            android:id="@+id/alsaDeviceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_alsaDevice" />
+
+        <Spinner
+            android:id="@+id/alsaDeviceSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:entries="@array/preResearch_alsaDevice" />
+    </LinearLayout>
+
+    <!-- alsa sample rate container -->
+    <LinearLayout
+        android:id="@+id/alsaSampleContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alsaParameterContainer">
+
+        <TextView
+            android:id="@+id/alsaSampleTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_alsa_sample_rate" />
+
+        <Spinner
+            android:id="@+id/alsaSampleSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/sampleRateArray" />
+    </LinearLayout>
+
+    <!-- alsa channel count container -->
+    <LinearLayout
+        android:id="@+id/alsaChannelContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alsaSampleContainer">
+
+        <TextView
+            android:id="@+id/alsaChannelTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_alsa_channel" />
+
+        <Spinner
+            android:id="@+id/alsaChannelSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/channelCountArray" />
+    </LinearLayout>
+
+    <!-- alsa bit container -->
+    <LinearLayout
+        android:id="@+id/alsaBitContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alsaChannelContainer">
+
+        <TextView
+            android:id="@+id/alsaBitTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/preResearch_alsa_bit" />
+
+        <Spinner
+            android:id="@+id/alsaBitSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:entries="@array/preResearch_alsaBit" />
+    </LinearLayout>
+
+    <!-- more forward research container -->
+    <LinearLayout
+        android:id="@+id/moreDevContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/alsaBitContainer">
+        <Button
+            android:id="@+id/button_alsaCapture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="@string/preResearch_alsaCapture"
+            android:textSize="24sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
