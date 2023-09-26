@@ -73,14 +73,9 @@ public class SecondFragment extends Fragment {
             }
         });
 
-        binding.oboeAudioApiSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // do nothing
+        binding.oboeBluetoothSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isOboeStart) {
+                preResearch.updateBluetoothId(isChecked);
             }
         });
 
@@ -168,7 +163,8 @@ public class SecondFragment extends Fragment {
         }
         boolean needRecord = binding.oboeRecordSwitch.isChecked();
         boolean needPlay = binding.oboePlayerSwitch.isChecked();
-        preResearch.setOboeParameter(audioApi, needRecord, needPlay, recordDeviceId, sample, channel, bit, playDeviceId);
+        boolean enableBluetooth = binding.oboeBluetoothSwitch.isChecked();
+        preResearch.setOboeParameter(audioApi, needRecord, needPlay, recordDeviceId, sample, channel, bit, playDeviceId, enableBluetooth);
     }
 
     private void setAlsaParameter() {

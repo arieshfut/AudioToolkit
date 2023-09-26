@@ -64,14 +64,13 @@ void OboeManager::setPlayerParameter(std::string path, int devId) {
 
 bool OboeManager::updateDeviceId(int inputDevId, int outputDevId) {
     bool recordResult = false, playerResult = false;
-    if (inputDevId != 0) {
+    if (recordEnable) {
         recordResult = audioStreamRecorder->updateDeviceId(inputDevId);
     }
-
-    if (outputDevId != 0) {
-        playerResult = audioStreamRecorder->updateDeviceId(outputDevId);
+    if (playEnable) {
+        playerResult = audioStreamPlayer->updateDeviceId(outputDevId);
     }
-    return recordResult && playerResult;
+    return true;
 }
 
 int OboeManager::start() {

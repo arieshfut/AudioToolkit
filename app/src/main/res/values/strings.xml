@@ -64,6 +64,7 @@
     <string name="preResearch_oboeDeviceRecord">采集设备</string>
     <string name="preResearch_oboeDevicePlay">播放设备</string>
     <string name="preResearch_oboeDeviceDefault">跟随系统</string>
+    <string name="preResearch_oboeBluetoothChoose">蓝牙切换</string>
     <string name="preResearch_oboeTest">Oboe测试</string>
 
     <string name="preResearch_sensitivity">灵敏度</string>

@@ -46,11 +46,8 @@ OboeAudioStream::OboeAudioStream() :
 
 bool OboeAudioStream::updateDeviceId(int devId) {
     deviceId = devId;
-
-    if (state == STATE_START) {
-        return restart();
-    }
-    return true;
+    ALOGI("OboeAudioStream updateDeviceId and restart");
+    return restart();
 }
 
 void OboeAudioStream::onErrorBeforeClose(oboe::AudioStream *audioStream, oboe::Result error) {
@@ -92,6 +89,7 @@ AudioStreamRecorder::setParameter(std::string recordDir, oboe::AudioApi api, int
 }
 
 int AudioStreamRecorder::start() {
+    ALOGI("AudioStreamRecorder start");
     std::lock_guard<std::mutex> lock(mLock);
     wavFile->open();
     oboe::AudioStreamBuilder builder;
@@ -108,6 +106,7 @@ int AudioStreamRecorder::start() {
             ->openStream(mAudioStream);
     if (result == oboe::Result::OK && mAudioStream) {
         result = mAudioStream->requestStart();
+        ALOGI("AudioStreamRecorder start, ");
     }
 
     state = (result == oboe::Result::OK ? STATE_START : STATE_ERROR);
@@ -115,6 +114,7 @@ int AudioStreamRecorder::start() {
 }
 
 void AudioStreamRecorder::stop() {
+    ALOGI("AudioStreamRecorder stop");
     std::lock_guard<std::mutex> lock(mLock);
     if (mAudioStream && mAudioStream->getState() == oboe::StreamState::Started) {
         mAudioStream->requestStop();
@@ -126,6 +126,7 @@ void AudioStreamRecorder::stop() {
 }
 
 bool AudioStreamRecorder::restart() {
+    ALOGI("AudioStreamRecorder restart.");
     stop();
     return (start() == 0);
 }
@@ -164,6 +165,7 @@ void AudioStreamPlayer::setParameter(oboe::AudioApi api, std::string path, int d
 }
 
 int AudioStreamPlayer::start() {
+    ALOGI("AudioStreamPlayer start");
     std::lock_guard<std::mutex> lock(mLock);
 
     oboe::AudioStreamBuilder builder;
@@ -187,6 +189,7 @@ int AudioStreamPlayer::start() {
 }
 
 void AudioStreamPlayer::stop() {
+    ALOGI("AudioStreamPlayer stop");
     std::lock_guard<std::mutex> lock(mLock);
     if (mAudioStream && mAudioStream->getState() == oboe::StreamState::Started) {
         mAudioStream->requestStop();
@@ -197,6 +200,7 @@ void AudioStreamPlayer::stop() {
 }
 
 bool AudioStreamPlayer::restart() {
+    ALOGI("AudioStreamPlayer restart");
     stop();
     return (start() == 0);
 }

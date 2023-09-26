@@ -201,7 +201,7 @@
         <Spinner
             android:id="@+id/playerFileSpinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
             android:entries="@array/playerFileArray" />
@@ -229,6 +229,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:text="@string/needPlayer"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/oboeBluetoothSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="@string/preResearch_oboeBluetoothChoose"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
     </LinearLayout>
 

@@ -22,7 +22,7 @@ public class AudioDeviceManager {
     private boolean isVirtualDeviceAdded = false;
     private boolean isVirtualDeviceRemoved = false;
 
-    private static final String[] DeviceNameAlias = {
+    public static final String[] DeviceNameAlias = {
             "Unknown",  // UNKNOWN
             "Earpiece",  // BUILTIN_EARPIECE
             "Speaker",  // BUILTIN_SPEAKER
