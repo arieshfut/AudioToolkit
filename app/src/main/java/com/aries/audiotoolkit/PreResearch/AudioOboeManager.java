@@ -66,11 +66,23 @@ public class AudioOboeManager {
         return 0;
     }
 
+    private int getA2dpDevId() {
+        AudioDeviceInfo[] devs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+        for (AudioDeviceInfo dev : devs) {
+            if (dev.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+                return dev.getId();
+            }
+        }
+        return 0;
+    }
+
     public void setOboeRecordParam(int devId, int sample, int channel, int b) {
         if (!needRecorder) {
             return;
         }
         if (btEnable) {
+            audioManager.startBluetoothSco();
+            audioManager.setBluetoothScoOn(true);
             deviceId = getBluetoothDevId(AudioManager.GET_DEVICES_INPUTS);
         } else {
             deviceId = devId;
@@ -117,11 +129,11 @@ public class AudioOboeManager {
             audioManager.setBluetoothScoOn(false);
             audioManager.stopBluetoothSco();
             /*try {
-                sleep(1500);
+                sleep(4000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }*/
-            NativeUpdateDeviceId(0, 0);
+            NativeUpdateDeviceId(0, getA2dpDevId());
         }
     }
 

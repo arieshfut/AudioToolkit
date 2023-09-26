@@ -165,24 +165,47 @@ void AudioStreamPlayer::setParameter(oboe::AudioApi api, std::string path, int d
 }
 
 int AudioStreamPlayer::start() {
-    ALOGI("AudioStreamPlayer start");
+    ALOGI("AudioStreamPlayer start, devId = %d", deviceId);
     std::lock_guard<std::mutex> lock(mLock);
+    oboe::Result result = oboe::Result::OK;
 
-    oboe::AudioStreamBuilder builder;
-    oboe::Result result = builder.setAudioApi(audioApi)
-            ->setDirection(oboe::Direction::Output)
-            ->setSharingMode(shareMode)
-            ->setPerformanceMode(perform)
-            ->setSampleRateConversionQuality(srcLevel)
-            ->setDeviceId(deviceId)
-            ->setFormat(format)
-            ->setSampleRate(sampleRate)
-            ->setChannelCount(channelCount)
-            ->setDataCallback(this)
-            ->openStream(mAudioStream);
-    if (result == oboe::Result::OK && mAudioStream) {
-        result = mAudioStream->requestStart();
-    }
+    // It is possible for a stream's device to become disconnected during the open or between
+    // the Open and the Start.
+    // So if it fails to start, close the old stream and try again.
+    int tryCount = 0;
+    do {
+        if (tryCount > 0) {
+            usleep(20 * 1000); // Sleep between tries to give the system time to settle.
+        }
+
+        // open stream
+        oboe::AudioStreamBuilder builder;
+        result = builder.setAudioApi(audioApi)
+                ->setDirection(oboe::Direction::Output)
+                ->setSharingMode(shareMode)
+                ->setPerformanceMode(perform)
+                ->setSampleRateConversionQuality(srcLevel)
+                ->setDeviceId(deviceId)
+                ->setFormat(format)
+                ->setSampleRate(sampleRate)
+                ->setChannelCount(channelCount)
+                ->setDataCallback(this)
+                ->openStream(mAudioStream);
+        if (result == oboe::Result::OK) {
+            ALOGI("Stream opened: AudioAPI = %d, channelCount = %d, deviceID = %d",
+                 mAudioStream->getAudioApi(),
+                 mAudioStream->getChannelCount(),
+                 mAudioStream->getDeviceId());
+            result = mAudioStream->requestStart();
+            if (result != oboe::Result::OK) {
+                ALOGE("Error starting playback stream. Error: %s", oboe::convertToText(result));
+                mAudioStream->close();
+                mAudioStream.reset();
+            }
+        } else {
+            ALOGE("Error creating playback stream. Error: %s", oboe::convertToText(result));
+        }
+    } while (result != oboe::Result::OK && tryCount++ < 3);
 
     state = (result == oboe::Result::OK ? STATE_START : STATE_ERROR);
     return static_cast<int>(result);
@@ -191,7 +214,7 @@ int AudioStreamPlayer::start() {
 void AudioStreamPlayer::stop() {
     ALOGI("AudioStreamPlayer stop");
     std::lock_guard<std::mutex> lock(mLock);
-    if (mAudioStream && mAudioStream->getState() == oboe::StreamState::Started) {
+    if (mAudioStream && mAudioStream->getState() != oboe::StreamState::Stopped) {
         mAudioStream->requestStop();
         mAudioStream->close();
         mAudioStream.reset();
@@ -202,6 +225,7 @@ void AudioStreamPlayer::stop() {
 bool AudioStreamPlayer::restart() {
     ALOGI("AudioStreamPlayer restart");
     stop();
+    usleep(500 * 1000);
     return (start() == 0);
 }
 
