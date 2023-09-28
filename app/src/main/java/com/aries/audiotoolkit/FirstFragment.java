@@ -492,7 +492,7 @@ public class FirstFragment extends Fragment {
                 case 1:
                 // case 2:
                 default:
-                    fileName = "Eagles.Hotel_California.wav";
+                    fileName = "Eagles_Hotel_California.wav";
                     break;
             }
         } else {
