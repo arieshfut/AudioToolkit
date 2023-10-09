@@ -97,7 +97,8 @@ int AudioStreamRecorder::start() {
             ->setDirection(oboe::Direction::Input)
             ->setSharingMode(shareMode)
             ->setPerformanceMode(perform)
-            ->setSampleRateConversionQuality(srcLevel)
+            ->setInputPreset(oboe::InputPreset::Unprocessed)
+            // ->setSampleRateConversionQuality(srcLevel)
             ->setDeviceId(deviceId)
             ->setFormat(format)
             ->setSampleRate(sampleRate)
@@ -105,6 +106,10 @@ int AudioStreamRecorder::start() {
             ->setDataCallback(this)
             ->openStream(mAudioStream);
     if (result == oboe::Result::OK && mAudioStream) {
+        ALOGI("Stream opened: AudioAPI = %d, channelCount = %d, deviceID = %d",
+              mAudioStream->getAudioApi(),
+              mAudioStream->getChannelCount(),
+              mAudioStream->getDeviceId());
         result = mAudioStream->requestStart();
         ALOGI("AudioStreamRecorder start, ");
     }
@@ -184,7 +189,7 @@ int AudioStreamPlayer::start() {
                 ->setDirection(oboe::Direction::Output)
                 ->setSharingMode(shareMode)
                 ->setPerformanceMode(perform)
-                ->setSampleRateConversionQuality(srcLevel)
+                // ->setSampleRateConversionQuality(srcLevel)
                 ->setDeviceId(deviceId)
                 ->setFormat(format)
                 ->setSampleRate(sampleRate)
