@@ -3,6 +3,8 @@ package com.aries.audiotoolkit;
 import static android.app.Activity.RESULT_OK;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -97,38 +100,32 @@ public class FirstFragment extends Fragment {
 
         externalWavPath = context.getString(R.string.user_player_Corpus_default);
         chooseWavLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-                new ActivityResultCallback<Uri>() {
-                    @Override
-                    public void onActivityResult(Uri result) {
-                        if (result != null) {
-                            String wavPath = UriUtil.getPath(context, result);
-                            if (WaveFile.isWavFileExist(wavPath)) {
-                                externalWavPath = wavPath;
-                                playAssetFile = false;
-                            } else {
-                                MainActivity.showToast("选择了无效的wav文件");
-                            }
-                            binding.UserCorpusTitleText.setText(externalWavPath);
+                result -> {
+                    if (result != null) {
+                        String wavPath = UriUtil.getPath(context, result);
+                        if (WaveFile.isWavFileExist(wavPath)) {
+                            externalWavPath = wavPath;
+                            playAssetFile = false;
                         } else {
-                            Log.i(TAG, "Uri is null, pathString=" + externalWavPath);
+                            MainActivity.showToast("选择了无效的wav文件");
                         }
+                        binding.UserCorpusTitleText.setText(externalWavPath);
+                    } else {
+                        Log.i(TAG, "Uri is null, pathString=" + externalWavPath);
                     }
                 });
 
-        startScreenLaunch = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                Log.i(TAG, "ActivityResult=" + result.getResultCode());
-                if (result.getResultCode() == RESULT_OK) {
-                    //获得录屏权限，启动Service进行录制
-                    setShareParameter(result.getData());
-                    isShareSetReady = true;
-                } else {
-                    isShareSetReady = false;
-                    MainActivity.showToast("权限申请失败，无法共享音频。");
-                }
-                isScreenRequestEnd = true;
+        startScreenLaunch = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            Log.i(TAG, "ActivityResult=" + result.getResultCode());
+            if (result.getResultCode() == RESULT_OK) {
+                //获得录屏权限，启动Service进行录制
+                setShareParameter(result.getData());
+                isShareSetReady = true;
+            } else {
+                isShareSetReady = false;
+                MainActivity.showToast("权限申请失败，无法共享音频。");
             }
+            isScreenRequestEnd = true;
         });
     }
 
@@ -276,7 +273,12 @@ public class FirstFragment extends Fragment {
         binding.UserCorpusTitleText.setText(context.getString(R.string.user_player_Corpus_default));
         binding.UserCorpusTitleText.setOnClickListener(view2 -> {
             String[] fileType = {"*/*"};
-            chooseWavLauncher.launch(fileType);
+            try {
+                chooseWavLauncher.launch(fileType);
+            } catch (ActivityNotFoundException e) {
+                Log.e(TAG, "当前系统无法选择文件:" + e.getMessage());
+                MainActivity.showToast("无法手动选择wav文件");
+            }
         });
 
         mRecordSwitch = getView().findViewById(R.id.recordSwitch);
