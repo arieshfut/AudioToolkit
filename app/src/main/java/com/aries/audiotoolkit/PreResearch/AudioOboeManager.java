@@ -8,6 +8,8 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
 import com.aries.audiotoolkit.AudioModule.AudioDeviceManager;
 import com.aries.audiotoolkit.MainActivity;
 
@@ -43,7 +45,9 @@ public class AudioOboeManager {
     }
     private AudioOboeManager() {
         audioManager = ((AudioManager) MainActivity.getContext().getSystemService(Context.AUDIO_SERVICE));
-        AudioDeviceLog();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AudioDeviceLog();
+        }
         NativeOboeCreate();
     }
 
@@ -57,20 +61,24 @@ public class AudioOboeManager {
     }
 
     private int getBluetoothDevId(int flag) {
-        AudioDeviceInfo[] devs = audioManager.getDevices(flag);
-        for (AudioDeviceInfo dev : devs) {
-            if (dev.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
-                return dev.getId();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            AudioDeviceInfo[] devs = audioManager.getDevices(flag);
+            for (AudioDeviceInfo dev : devs) {
+                if (dev.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+                    return dev.getId();
+                }
             }
         }
         return 0;
     }
 
     private int getA2dpDevId() {
-        AudioDeviceInfo[] devs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
-        for (AudioDeviceInfo dev : devs) {
-            if (dev.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
-                return dev.getId();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            AudioDeviceInfo[] devs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+            for (AudioDeviceInfo dev : devs) {
+                if (dev.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+                    return dev.getId();
+                }
             }
         }
         return 0;
@@ -140,6 +148,7 @@ public class AudioOboeManager {
     /**
      * parse AudioDeviceInfo list to String
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private String parseDeviceInfo(AudioDeviceInfo dev) {
         String result = "";
         result += "ID:" + dev.getId() + ", ";
@@ -152,6 +161,7 @@ public class AudioOboeManager {
         return result;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void AudioDeviceLog() {
         int count = 0;
         AudioDeviceInfo[] inputDevs = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);

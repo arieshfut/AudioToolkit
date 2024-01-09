@@ -4,6 +4,7 @@ import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
@@ -163,7 +164,12 @@ public class AudioTrackThread {
                 format = AudioFormat.ENCODING_PCM_16BIT;
                 break;
             case 32:
-                format = AudioFormat.ENCODING_PCM_FLOAT;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    format = AudioFormat.ENCODING_PCM_FLOAT;
+                } else {
+                    Log.e(TAG, "wav bit " + bit + "not support on version < LOLLIPOP.");
+                    return false;
+                }
                 break;
             default:
                 Log.e(TAG, "wav bit " + bit + "not support.");
@@ -227,6 +233,11 @@ public class AudioTrackThread {
         }
         try {
             audioTrack = createAudioTrack();
+            if (audioTrack == null) {
+                Log.d(TAG, "Initialization of AudioTrack is NULL.");
+                releaseAudioResources();
+                return false;
+            }
         } catch (IllegalArgumentException e) {
             Log.d(TAG, "IllegalArgumentException: " + e.getMessage());
             releaseAudioResources();
@@ -271,7 +282,6 @@ public class AudioTrackThread {
     public boolean stop() {
         Log.d(TAG, "stop play out");
         if (state == STATE_START) {
-            wavFile.close();
             if(audioThread != null) {
                 audioThread.stopThread();
             }
@@ -289,6 +299,7 @@ public class AudioTrackThread {
         }
 
         releaseAudioResources();
+        wavFile.close();
         state = STATE_STOP;
         return true;
     }
@@ -303,19 +314,32 @@ public class AudioTrackThread {
             Log.w(TAG, "Unable to use fast mode since requested sample rate is not native");
         }
         // Create an audio track where the audio usage is for VoIP and the content type is speech.
-        return new AudioTrack(
-                new AudioAttributes.Builder()
-                        .setUsage(usage)
-                        .setContentType(contentType)
-                        .build(),
-                new AudioFormat.Builder()
-                        .setEncoding(format)
-                        .setSampleRate(sampleRate)
-                        .setChannelMask(channel)
-                        .build(),
-                bufferSize,
-                AudioTrack.MODE_STREAM,
-                AudioManager.AUDIO_SESSION_ID_GENERATE);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                return new AudioTrack(
+                        new AudioAttributes.Builder()
+                                .setUsage(usage)
+                                .setContentType(contentType)
+                                .build(),
+                        new AudioFormat.Builder()
+                                .setEncoding(format)
+                                .setSampleRate(sampleRate)
+                                .setChannelMask(channel)
+                                .build(),
+                        bufferSize,
+                        AudioTrack.MODE_STREAM,
+                        AudioManager.AUDIO_SESSION_ID_GENERATE);
+            } else {
+                return new AudioTrack(streamType, sampleRate, channel, format, bufferSize,
+                        AudioTrack.MODE_STREAM, 0);
+            }
+        } catch (UnsupportedOperationException e) {
+            Log.e(TAG, "UnsupportedOperationException error: " + e.getMessage());
+            return null;
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "IllegalArgumentException error: " + e.getMessage());
+            return null;
+        }
     }
 
     // Helper method which throws an exception  when an assertion has failed.

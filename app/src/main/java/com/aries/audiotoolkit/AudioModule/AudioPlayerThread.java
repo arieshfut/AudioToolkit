@@ -4,6 +4,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.util.Log;
 
 import com.aries.audiotoolkit.MainActivity;
@@ -13,7 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class AudioPlayerThread {
-    private static String TAG = "AudioPlayerThread";
+    private static final String TAG = "AudioPlayerThread";
 
 
     private static final int STATE_DEFAULT = 0;
@@ -111,31 +112,35 @@ public class AudioPlayerThread {
         }
         mMediaPlayer.setLooping(loopState);
 
-        AudioAttributes temp;
-        int contentType = AudioAttributes.CONTENT_TYPE_MUSIC;
-        int usage = AudioAttributes.USAGE_MEDIA;
-        int stream = AudioManager.STREAM_MUSIC;
-        if (mode == AudioManager.MODE_IN_COMMUNICATION) {
-            contentType = AudioAttributes.CONTENT_TYPE_SPEECH;
-            usage = AudioAttributes.USAGE_VOICE_COMMUNICATION;
-            stream = AudioManager.STREAM_VOICE_CALL;
-        }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            temp = new AudioAttributes.Builder()
-                    .setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_ALL)
-                    .setContentType(contentType)
-                    .setUsage(usage)
-                    .setLegacyStreamType(stream)
-                    .build();
-        } else {
-            temp = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setLegacyStreamType(stream)
-                    .build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes temp;
+            int contentType = AudioAttributes.CONTENT_TYPE_MUSIC;
+            int usage = AudioAttributes.USAGE_MEDIA;
+            int stream = AudioManager.STREAM_MUSIC;
+            if (mode == AudioManager.MODE_IN_COMMUNICATION) {
+                contentType = AudioAttributes.CONTENT_TYPE_SPEECH;
+                usage = AudioAttributes.USAGE_VOICE_COMMUNICATION;
+                stream = AudioManager.STREAM_VOICE_CALL;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                temp = new AudioAttributes.Builder()
+                        .setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_ALL)
+                        .setContentType(contentType)
+                        .setUsage(usage)
+                        .setLegacyStreamType(stream)
+                        .build();
+            } else {
+                temp = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setLegacyStreamType(stream)
+                        .build();
+            }
+            mMediaPlayer.setAudioAttributes(temp);
+        } else{
+            Log.w(TAG, "can not init AudioAttributes.");
         }
 
-        mMediaPlayer.setAudioAttributes(temp);
         mMediaPlayer.start();
         state = STATE_PLAYING;
         return 0;

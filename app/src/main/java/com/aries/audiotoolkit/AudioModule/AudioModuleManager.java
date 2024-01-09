@@ -37,7 +37,6 @@ public class AudioModuleManager {
     private AudioManager audioManager;
 
     private int state;
-    private String information;
     /** flag indicate audio record/player/share need runing */
     private boolean mNeedRecord = false;
     private boolean mNeedShare = false;
@@ -53,7 +52,7 @@ public class AudioModuleManager {
     // default share parameters
     private int shareSampleRate = 16000;
     private int shareChannel = 1;
-    private int shareUsage = AudioAttributes.USAGE_MEDIA;
+    private int shareUsage = 1;
     private Intent shareData = null;
     private boolean isSharing = false;
 
@@ -76,7 +75,6 @@ public class AudioModuleManager {
         bluetoothManager = new BluetoothManager(audioManager);
         audioDevice = new AudioDeviceManager(audioManager);
         audioVolume = new AudioVolumeManager(audioManager);
-        information = "";
 
         audioDevice.start();
         audioVolume.start();
@@ -208,8 +206,6 @@ public class AudioModuleManager {
     }
 
     public int stopAll() {
-        int result = -1;
-
         if (state == STATE_DEFAULT) {
             return 0;
         }

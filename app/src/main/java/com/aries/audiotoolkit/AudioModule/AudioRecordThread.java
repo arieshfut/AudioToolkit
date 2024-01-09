@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Process;
 import android.util.Log;
 
@@ -85,15 +86,19 @@ public class AudioRecordThread {
         byteData = new byte[mBufferSizeInBytes];
 
         try {
-            audioRecorder = new AudioRecord.Builder()
-                    .setAudioSource(mAudioSource)
-                    .setAudioFormat(new AudioFormat.Builder()
-                            .setEncoding(mEncodeBit)
-                            .setSampleRate(mSampleRate)
-                            .setChannelMask(mAudioFormat)
-                            .build())
-                    .setBufferSizeInBytes(2 * mBufferSizeInBytes)
-                    .build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioRecorder = new AudioRecord.Builder()
+                        .setAudioSource(mAudioSource)
+                        .setAudioFormat(new AudioFormat.Builder()
+                                .setEncoding(mEncodeBit)
+                                .setSampleRate(mSampleRate)
+                                .setChannelMask(mAudioFormat)
+                                .build())
+                        .setBufferSizeInBytes(2 * mBufferSizeInBytes)
+                        .build();
+            } else {
+                audioRecorder = new AudioRecord(mAudioSource, mSampleRate, mAudioFormat, mEncodeBit, 2 * mBufferSizeInBytes);
+            }
         } catch (UnsupportedOperationException e) {
             Log.e(TAG, "UnsupportedOperationException error: " + e.getMessage());
             audioRecorder = null;

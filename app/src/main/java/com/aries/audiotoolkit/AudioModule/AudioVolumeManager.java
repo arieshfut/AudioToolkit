@@ -23,7 +23,6 @@ public class AudioVolumeManager {
         maxVolumeIndex = getMaxVolume();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public int start() {
         return 0;
     }

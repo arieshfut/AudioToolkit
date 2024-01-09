@@ -16,14 +16,14 @@
 oboe::AudioFormat bitToFormat(int bit) {
     oboe::AudioFormat format;
     switch (bit) {
-        case 24:
-            format = oboe::AudioFormat::I24;
+        case 16:
+            format = oboe::AudioFormat::I16;
             break;
         case 32:
-            format = oboe::AudioFormat::I32;
+            format = oboe::AudioFormat::Float;
             break;
         default:
-            format = oboe::AudioFormat::I16;
+            format = oboe::AudioFormat::Unspecified;
             break;
     }
     return format;
@@ -156,7 +156,7 @@ AudioStreamRecorder::onAudioReady(oboe::AudioStream *audioStream, void *audioDat
  */
 AudioStreamPlayer::AudioStreamPlayer() : OboeAudioStream() {
     sampleRate = 48000;
-    format = oboe::AudioFormat::Float;
+    format = oboe::AudioFormat::I16;
     mPhaseIncrement = kFrequent * kTwoPi / (double) sampleRate;
 }
 
@@ -190,7 +190,7 @@ int AudioStreamPlayer::start() {
                 ->setSharingMode(shareMode)
                 ->setPerformanceMode(perform)
                 // ->setSampleRateConversionQuality(srcLevel)
-                ->setDeviceId(deviceId)
+                // ->setDeviceId(deviceId)
                 ->setFormat(format)
                 ->setSampleRate(sampleRate)
                 ->setChannelCount(channelCount)
@@ -237,11 +237,11 @@ bool AudioStreamPlayer::restart() {
 oboe::DataCallbackResult
 AudioStreamPlayer::onAudioReady(oboe::AudioStream *audioStream, void *audioData,
                                 int32_t numFrames) {
-    auto floatData = (float *) audioData;
+    auto i16Data = (uint8_t *) audioData;
     for (int i = 0; i < numFrames; i++) {
         float sampleValue = kAmplitude * sinf(mPhase);
         for (int j = 0; j < channelCount; j++) {
-            floatData[i * channelCount + j] = sampleValue;
+            i16Data[i * channelCount + j] = sampleValue;
         }
         mPhase += mPhaseIncrement;
         if (mPhase >= kTwoPi) mPhase -= kTwoPi;

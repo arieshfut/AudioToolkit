@@ -44,7 +44,7 @@ import java.util.concurrent.Executors;
 
 public class AudioShareService extends Service {
 
-    private static String TAG = "AudioShareService";
+    private static final String TAG = "AudioShareService";
 
     private Context mContext = null;
 
@@ -150,6 +150,7 @@ public class AudioShareService extends Service {
     }
 
     //createMediaProjection
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public MediaProjection createMediaProjection() {
         /**
          * Use with getSystemService(Class) to retrieve a MediaProjectionManager instance for
@@ -270,6 +271,7 @@ public class AudioShareService extends Service {
                 .build();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onDestroy() {
         super.onDestroy();

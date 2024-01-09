@@ -361,11 +361,17 @@ public class FirstFragment extends Fragment {
 
         // Share parameters need set by ScreenCapture permission
         if (needShare) {
-            MediaProjectionManager mediaProjectionManager =
-                    (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-            //Returns an Intent that must passed to startActivityForResult() in order to start screen capture.
-            Intent permissionIntent = mediaProjectionManager.createScreenCaptureIntent();
-            startScreenLaunch.launch(permissionIntent);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                MediaProjectionManager mediaProjectionManager =
+                        (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                //Returns an Intent that must passed to startActivityForResult() in order to start screen capture.
+                Intent permissionIntent = mediaProjectionManager.createScreenCaptureIntent();
+                startScreenLaunch.launch(permissionIntent);
+            } else {
+                needShare = false;
+                mShareSwitch.setChecked(false);
+                MainActivity.showToast("当前版本不支持共享音频");
+            }
         }
     }
 

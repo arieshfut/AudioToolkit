@@ -58,13 +58,17 @@ public class AudioDeviceManager {
 
     public AudioDeviceManager(AudioManager manager) {
         audioManager = manager;
-        deviceMonitor = new AudioDeviceMonitor();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            deviceMonitor = new AudioDeviceMonitor();
+        }
     }
 
     public int start() {
         if (audioManager != null) {
             isVirtualDeviceAdded = true;
-            audioManager.registerAudioDeviceCallback(deviceMonitor, null);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioManager.registerAudioDeviceCallback(deviceMonitor, null);
+            }
         }
 
         return 1;
@@ -73,7 +77,9 @@ public class AudioDeviceManager {
     public void stop() {
         if (audioManager != null) {
             isVirtualDeviceRemoved = true;
-            audioManager.unregisterAudioDeviceCallback(deviceMonitor);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioManager.unregisterAudioDeviceCallback(deviceMonitor);
+            }
         }
         audioManager = null;
     }
@@ -85,7 +91,8 @@ public class AudioDeviceManager {
      * @param deviceInfo AudioDeviceInfo returned from AudioManager lists.
      * @return 1 if device is a valid audio device.
      */
-    private boolean isValidDevice(AudioDeviceInfo deviceInfo) {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean isInvalidDevice(AudioDeviceInfo deviceInfo) {
         if (deviceInfo != null) {
             switch (deviceInfo.getType()) {
                 case AudioDeviceInfo.TYPE_BUILTIN_EARPIECE:
@@ -111,15 +118,16 @@ public class AudioDeviceManager {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public String getDevsInfo(int flags) {
-        StringBuilder listInfo = new StringBuilder("");
+        StringBuilder listInfo = new StringBuilder();
         boolean needSplit = false;
 
         if (audioManager != null) {
             AudioDeviceInfo[] devs = audioManager.getDevices(flags);
             int i = 0;
             for (; i < devs.length; i++) {
-                if (!isValidDevice(devs[i])) {
+                if (isInvalidDevice(devs[i])) {
                     continue;
                 }
 
@@ -140,21 +148,35 @@ public class AudioDeviceManager {
     }
 
     public String getInputDevsInfo() {
-        return getDevsInfo(AudioManager.GET_DEVICES_INPUTS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getDevsInfo(AudioManager.GET_DEVICES_INPUTS);
+        } else {
+            return "";
+        }
     }
 
     public String getOutputDevsInfo() {
-        return getDevsInfo(AudioManager.GET_DEVICES_OUTPUTS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getDevsInfo(AudioManager.GET_DEVICES_OUTPUTS);
+        } else {
+            return "";
+        }
     }
 
     public List<String> listSpeaker() {
+
         List<String> speakers = new ArrayList<>();
         speakers.add("跟随系统");
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return speakers;
+        }
+
         if (audioManager != null) {
             AudioDeviceInfo[] devs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
             int i = 0;
             for (; i < devs.length; i++) {
-                if (!isValidDevice(devs[i])) {
+                if (isInvalidDevice(devs[i])) {
                     continue;
                 }
 
@@ -177,6 +199,7 @@ public class AudioDeviceManager {
     /**
      * parse AudioDeviceInfo list to String
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private String parseDeviceInfo(AudioDeviceInfo dev) {
         String result = "";
         result += "ID:" + dev.getId() + ", ";
