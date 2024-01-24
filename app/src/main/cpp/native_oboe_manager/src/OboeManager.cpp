@@ -41,7 +41,6 @@ void OboeManager::setProp(std::string path, int api, bool needRecord, bool needP
     switch (api) {
         case 1:
             audioApi = oboe::AudioApi::AAudio;
-            break;
         case 2:
             audioApi = oboe::AudioApi::OpenSLES;
             break;
@@ -107,4 +106,27 @@ void OboeManager::stop() {
         audioStreamPlayer->stop();
     }
     state = STATE_STOP;
+}
+
+bool OboeManager::isLatencyDetectionSupported() {
+    if (playEnable) {
+        return audioStreamPlayer->isLatencyDetectionSupported();
+    }
+
+    if (recordEnable) {
+        return audioStreamRecorder->isLatencyDetectionSupported();
+    }
+    return false;
+}
+
+double OboeManager::getCurrentOutputLatencyMillis() {
+    if (playEnable) {
+        return audioStreamPlayer->getCurrentOutputLatencyMillis();
+    }
+
+    if (recordEnable) {
+        return audioStreamRecorder->getCurrentOutputLatencyMillis();
+    }
+
+    return 0.0f;
 }

@@ -60,4 +60,15 @@ public class PreResearchManager {
     public void updateBluetoothId(boolean btEnable) {
         audioOboe.updateBluetoothId(btEnable);
     }
+
+    public boolean isLatencyDetectionSupported() {
+        if (audioOboe != null) {
+            return audioOboe.isLatencyDetectionSupported();
+        }
+        return false;
+    }
+
+    public double getCurrentOutputLatencyMillis() {
+        return audioOboe.getCurrentOutputLatencyMillis();
+    }
 }

@@ -20,6 +20,8 @@ public:
     bool updateDeviceId(int inputDeviceId, int outputDeviceId);
     int start();
     void stop();
+    bool isLatencyDetectionSupported();
+    double getCurrentOutputLatencyMillis();
 
 private:
     AudioStreamRecorder*    audioStreamRecorder;

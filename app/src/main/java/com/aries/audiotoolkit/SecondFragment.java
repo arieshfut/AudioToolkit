@@ -10,18 +10,26 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.aries.audiotoolkit.PreResearch.PreResearchManager;
 import com.aries.audiotoolkit.databinding.FragmentSecondBinding;
 
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SecondFragment extends Fragment {
     private static final String TAG = "SecondFragment";
+    private static final long UPDATE_LATENCY_EVERY_MILLIS = 1000;
 
     private boolean isAlsaStart = false;
     private boolean isOboeStart = false;
     private Context context;
     private PreResearchManager preResearch = null;
     private FragmentSecondBinding binding;
+    private Timer mLatencyUpdater;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +121,41 @@ public class SecondFragment extends Fragment {
             if (isAlsaStart) { setAlsaParameter(); }
             preResearch.aslaCapture(isAlsaStart);
         });
+
+        setupLatencyUpdater();
+    }
+
+    TimerTask latencyUpdateTask = new TimerTask() {
+        @Override
+        public void run() {
+            final String latencyStr;
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+                latencyStr = getString(R.string.only_supported_on_api_26);
+            } else if (preResearch != null && preResearch.isLatencyDetectionSupported()) {
+                double latency = preResearch.getCurrentOutputLatencyMillis();
+                latencyStr = String.format(Locale.getDefault(), "%.2fms", latency);
+            } else {
+                latencyStr = "-1.00ms";
+            }
+
+            FragmentActivity temp = getActivity();
+            if (temp != null) {
+                temp.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (binding != null) {
+                            binding.oboeLatencyText.setText(getString(R.string.preResearch_oboeLatency, latencyStr));
+                        }
+                    }
+                });
+            }
+        }
+    };
+
+    private void setupLatencyUpdater() {
+        //Update the latency every 1s
+        mLatencyUpdater = new Timer();
+        mLatencyUpdater.schedule(latencyUpdateTask, 0, UPDATE_LATENCY_EVERY_MILLIS);
     }
 
     private void setOboeParameter() {
@@ -214,6 +257,11 @@ public class SecondFragment extends Fragment {
         if (isAlsaStart) {
             preResearch.aslaCapture(false);
             isAlsaStart = false;
+        }
+
+        if (latencyUpdateTask != null){
+            latencyUpdateTask.cancel();
+            latencyUpdateTask = null;
         }
 
         preResearch = null;

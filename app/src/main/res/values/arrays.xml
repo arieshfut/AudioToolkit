@@ -59,7 +59,8 @@
         <item>听筒</item>
         <item>扬声器</item>
         <item>有线耳机</item>
-        <item>蓝牙</item>
+        <item>蓝牙A2DP</item>
+        <item>蓝牙SCO</item>
         <item>其他</item>
     </string-array>
 

@@ -157,7 +157,7 @@ public class AudioOboeManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             result += "Address:" + dev.getAddress() + ", ";
         }
-        result += "toString:" + dev + ", ";
+        result += "toString:" + dev;
         return result;
     }
 
@@ -165,17 +165,29 @@ public class AudioOboeManager {
     private void AudioDeviceLog() {
         int count = 0;
         AudioDeviceInfo[] inputDevs = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+        StringBuilder message = new StringBuilder();
         for (AudioDeviceInfo dev : inputDevs) {
             count++;
-            Log.i(TAG, "Input Dev[" + count + "] " + parseDeviceInfo(dev));
+            message.append("[input ").append(count).append("--").append(parseDeviceInfo(dev)).append("]\n");
         }
+        Log.i(TAG, message.toString());
 
         count = 0;
+        message = new StringBuilder();
         AudioDeviceInfo[] outputDevs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
         for (AudioDeviceInfo dev : outputDevs) {
             count++;
-            Log.i(TAG, "Output Dev[" + count + "] " + parseDeviceInfo(dev));
+            message.append("[output ").append(count).append("--").append(parseDeviceInfo(dev)).append("]\n");
         }
+        Log.i(TAG, message.toString());
+    }
+
+    public boolean isLatencyDetectionSupported() {
+        return NativeOboeLatencySupport();
+    }
+
+    public double getCurrentOutputLatencyMillis() {
+        return NativeOboeLatencyMillis();
     }
 
     private class OboeThread extends Thread {
@@ -212,5 +224,7 @@ public class AudioOboeManager {
     public native void NativeOboeInitPlayer(String path, int devId);
     public native int NativeOboeStart();
     public native void NativeOboeStop();
+    public native boolean NativeOboeLatencySupport();
+    public native double NativeOboeLatencyMillis();
 
 }

@@ -40,7 +40,8 @@ OboeAudioStream::OboeAudioStream() :
         sampleRate(DEFAULT_OBOE_SAMPLERATE),
         channelCount(DEFAULT_OBOE_CHANNEL),
         restartCount(0),
-        state(STATE_DEFAULT) {
+        state(STATE_DEFAULT),
+        mIsLatencyDetectionSupported(false) {
     // do something
 }
 
@@ -67,6 +68,11 @@ void OboeAudioStream::onErrorAfterClose(oboe::AudioStream *audioStream, oboe::Re
     }
 }
 
+bool OboeAudioStream::isLatencyDetectionSupported() {
+    return mIsLatencyDetectionSupported;
+}
+
+
 /**
  * AudioStreamRecorder
  */
@@ -92,6 +98,7 @@ int AudioStreamRecorder::start() {
     ALOGI("AudioStreamRecorder start");
     std::lock_guard<std::mutex> lock(mLock);
     wavFile->open();
+    mIsLatencyDetectionSupported = false;
     oboe::AudioStreamBuilder builder;
     oboe::Result result = builder.setAudioApi(audioApi)
             ->setDirection(oboe::Direction::Input)
@@ -106,12 +113,20 @@ int AudioStreamRecorder::start() {
             ->setDataCallback(this)
             ->openStream(mAudioStream);
     if (result == oboe::Result::OK && mAudioStream) {
-        ALOGI("Stream opened: AudioAPI = %d, channelCount = %d, deviceID = %d",
-              mAudioStream->getAudioApi(),
-              mAudioStream->getChannelCount(),
-              mAudioStream->getDeviceId());
         result = mAudioStream->requestStart();
-        ALOGI("AudioStreamRecorder start, ");
+        if (result != oboe::Result::OK) {
+            ALOGE("Error starting record stream. Error: %s", oboe::convertToText(result));
+            mAudioStream->close();
+            mAudioStream.reset();
+        } else {
+            mIsLatencyDetectionSupported = (mAudioStream->getTimestamp((CLOCK_MONOTONIC)) !=
+                                            oboe::Result::ErrorUnimplemented);
+            ALOGI("AudioStreamRecorder AudioApi=%s, Direction=Output, Sharing=%d, DeviceId=%d, sample=%d, channels=%d, bit=%d, BufferSize=%d",
+                  mAudioStream->getAudioApi() == oboe::AudioApi::OpenSLES ? "OpenSLES" : "AAudio",
+                  mAudioStream->getSharingMode(), mAudioStream->getDeviceId(),
+                  mAudioStream->getSampleRate(), mAudioStream->getChannelCount(),
+                  mAudioStream->getBytesPerSample() * 8, mAudioStream->getBufferSizeInFrames());
+        }
     }
 
     state = (result == oboe::Result::OK ? STATE_START : STATE_ERROR);
@@ -150,13 +165,28 @@ AudioStreamRecorder::onAudioReady(oboe::AudioStream *audioStream, void *audioDat
     return oboe::DataCallbackResult::Continue;
 }
 
+double AudioStreamRecorder::getCurrentOutputLatencyMillis() {
+    if (!mIsLatencyDetectionSupported) return -1.0;
+
+    std::lock_guard<std::mutex> lock(mLock);
+    if (!mAudioStream) return -1.0;
+
+    oboe::ResultWithValue<double> latencyResult = mAudioStream->calculateLatencyMillis();
+    if (latencyResult) {
+        return latencyResult.value();
+    } else {
+        ALOGE("AudioStreamPlayer Error calculating latency: %s", oboe::convertToText(latencyResult.error()));
+        return -1.0;
+    }
+}
+
 
 /**
  * AudioStreamPlayer
  */
 AudioStreamPlayer::AudioStreamPlayer() : OboeAudioStream() {
     sampleRate = 48000;
-    format = oboe::AudioFormat::I16;
+    format = oboe::AudioFormat::Float;
     mPhaseIncrement = kFrequent * kTwoPi / (double) sampleRate;
 }
 
@@ -182,7 +212,7 @@ int AudioStreamPlayer::start() {
         if (tryCount > 0) {
             usleep(20 * 1000); // Sleep between tries to give the system time to settle.
         }
-
+        mIsLatencyDetectionSupported = false;
         // open stream
         oboe::AudioStreamBuilder builder;
         result = builder.setAudioApi(audioApi)
@@ -190,22 +220,26 @@ int AudioStreamPlayer::start() {
                 ->setSharingMode(shareMode)
                 ->setPerformanceMode(perform)
                 // ->setSampleRateConversionQuality(srcLevel)
-                // ->setDeviceId(deviceId)
+                ->setDeviceId(deviceId)
                 ->setFormat(format)
                 ->setSampleRate(sampleRate)
                 ->setChannelCount(channelCount)
                 ->setDataCallback(this)
                 ->openStream(mAudioStream);
         if (result == oboe::Result::OK) {
-            ALOGI("Stream opened: AudioAPI = %d, channelCount = %d, deviceID = %d",
-                 mAudioStream->getAudioApi(),
-                 mAudioStream->getChannelCount(),
-                 mAudioStream->getDeviceId());
             result = mAudioStream->requestStart();
             if (result != oboe::Result::OK) {
                 ALOGE("Error starting playback stream. Error: %s", oboe::convertToText(result));
                 mAudioStream->close();
                 mAudioStream.reset();
+            } else {
+                mIsLatencyDetectionSupported = (mAudioStream->getTimestamp((CLOCK_MONOTONIC)) !=
+                                                oboe::Result::ErrorUnimplemented);
+                ALOGI("AudioStreamPlayer AudioApi=%s, Direction=Output, Sharing=%d, DeviceId=%d, sample=%d, channels=%d, bit=%d, BufferSize=%d",
+                     mAudioStream->getAudioApi() == oboe::AudioApi::OpenSLES ? "OpenSLES" : "AAudio",
+                     mAudioStream->getSharingMode(), mAudioStream->getDeviceId(),
+                     mAudioStream->getSampleRate(), mAudioStream->getChannelCount(),
+                     mAudioStream->getBytesPerSample() * 8, mAudioStream->getBufferSizeInFrames());
             }
         } else {
             ALOGE("Error creating playback stream. Error: %s", oboe::convertToText(result));
@@ -237,7 +271,7 @@ bool AudioStreamPlayer::restart() {
 oboe::DataCallbackResult
 AudioStreamPlayer::onAudioReady(oboe::AudioStream *audioStream, void *audioData,
                                 int32_t numFrames) {
-    auto i16Data = (uint8_t *) audioData;
+    auto i16Data = (float *) audioData;
     for (int i = 0; i < numFrames; i++) {
         float sampleValue = kAmplitude * sinf(mPhase);
         for (int j = 0; j < channelCount; j++) {
@@ -247,4 +281,19 @@ AudioStreamPlayer::onAudioReady(oboe::AudioStream *audioStream, void *audioData,
         if (mPhase >= kTwoPi) mPhase -= kTwoPi;
     }
     return oboe::DataCallbackResult::Continue;
+}
+
+double AudioStreamPlayer::getCurrentOutputLatencyMillis() {
+    if (!mIsLatencyDetectionSupported) return -1.0;
+
+    std::lock_guard<std::mutex> lock(mLock);
+    if (!mAudioStream) return -1.0;
+
+    oboe::ResultWithValue<double> latencyResult = mAudioStream->calculateLatencyMillis();
+    if (latencyResult) {
+        return latencyResult.value();
+    } else {
+        ALOGE("AudioStreamPlayer Error calculating latency: %s", oboe::convertToText(latencyResult.error()));
+        return -1.0;
+    }
 }

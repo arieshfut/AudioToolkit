@@ -57,6 +57,7 @@
 
     <string name="preResearch_oboeParamSet">Oboe参数设置</string>
     <string name="preResearch_oboeAudioApi">AudioApi</string>
+    <string name="preResearch_oboeLatency">Latency: %s</string>
     <string name="preResearch_oboeRecordSample">采样率</string>
     <string name="preResearch_oboeRecordChannel">声道</string>
     <string name="preResearch_oboeRecordBit">Bit位</string>
@@ -79,4 +80,5 @@
     <string name="toolkit_info">音频工具箱</string>
     <string name="toolkit_version">版本：1.0\n版权：Aries\n声明：允许随意引用及修改，但禁止商用</string>
 
+    <string name="only_supported_on_api_26">Only supported in AAudio (API 26+)</string>
 </resources>

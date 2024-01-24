@@ -96,3 +96,23 @@ Java_com_aries_audiotoolkit_PreResearch_AudioOboeManager_NativeOboeStop(JNIEnv *
     oboeManager->stop();
     ALOGI("NativeOboeStop done.");
 }
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_aries_audiotoolkit_PreResearch_AudioOboeManager_NativeOboeLatencySupport(JNIEnv *env,
+                                                                                  jobject thiz) {
+    if (oboeManager != nullptr) {
+        return oboeManager->isLatencyDetectionSupported();
+    }
+    return (jboolean)JNI_FALSE;
+}
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_com_aries_audiotoolkit_PreResearch_AudioOboeManager_NativeOboeLatencyMillis(JNIEnv *env,
+                                                                                 jobject thiz) {
+    if (oboeManager != nullptr) {
+        return oboeManager->getCurrentOutputLatencyMillis();
+    }
+    return 0.0f;
+}

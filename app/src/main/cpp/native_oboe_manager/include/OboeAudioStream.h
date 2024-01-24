@@ -22,6 +22,8 @@ public:
     virtual oboe::DataCallbackResult onAudioReady(oboe::AudioStream *audioStream, void *audioData, int32_t numFrames) = 0;
     virtual void onErrorBeforeClose(oboe::AudioStream* audioStream, oboe::Result error);
     virtual void onErrorAfterClose(oboe::AudioStream* audioStream, oboe::Result error);
+    virtual double getCurrentOutputLatencyMillis() = 0;
+    bool isLatencyDetectionSupported();
 
 protected:
     std::shared_ptr<oboe::AudioStream>  mAudioStream;
@@ -35,6 +37,7 @@ protected:
     int channelCount;
     int restartCount;
     int state;
+    bool mIsLatencyDetectionSupported;
 };
 
 class AudioStreamRecorder : public OboeAudioStream {
@@ -46,7 +49,7 @@ public:
     void stop() override;
     bool restart() override;
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *audioStream, void *audioData, int32_t numFrames) override;
-
+    double getCurrentOutputLatencyMillis() override;
 private:
     std::mutex  mLock;
     std::string     recordFileDir;
@@ -62,6 +65,7 @@ public:
     void stop() override;
     bool restart() override;
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *audioStream, void *audioData, int32_t numFrames) override;
+    double getCurrentOutputLatencyMillis() override;
 
 private:
     std::mutex  mLock;

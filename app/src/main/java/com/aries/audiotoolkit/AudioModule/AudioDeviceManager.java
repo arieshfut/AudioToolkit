@@ -15,7 +15,6 @@ import java.util.List;
 
 public class AudioDeviceManager {
     private static final String TAG = "AudioDeviceManager";
-    private static final boolean DEBUG = false;
 
     private AudioManager audioManager;
     private AudioDeviceMonitor deviceMonitor = null;
@@ -38,7 +37,7 @@ public class AudioDeviceManager {
             "USB_ACCESSORY",    // USB_ACCESSORY
             "DOCK",    // DOCK
             "FM",    // FM
-            "Microphone",    // BUILTIN_MIC
+            "Mic",    // BUILTIN_MIC
             "FM_TUNER",    // FM_TUNER
             "TV_TUNER",    // TV_TUNER
             "TELEPHONY",    // TELEPHONY
@@ -109,12 +108,12 @@ public class AudioDeviceManager {
                 case AudioDeviceInfo.TYPE_BUILTIN_SPEAKER_SAFE:
                 case AudioDeviceInfo.TYPE_BLE_HEADSET:
                 case AudioDeviceInfo.TYPE_BLE_SPEAKER:
-                    return true;
-                default:
                     return false;
+                default:
+                    return true;
             }
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -126,7 +125,9 @@ public class AudioDeviceManager {
         if (audioManager != null) {
             AudioDeviceInfo[] devs = audioManager.getDevices(flags);
             int i = 0;
+            StringBuilder message = new StringBuilder("");
             for (; i < devs.length; i++) {
+                message.append("[").append(i).append("--").append(parseDeviceInfo(devs[i])).append("]\n");
                 if (isInvalidDevice(devs[i])) {
                     continue;
                 }
@@ -143,6 +144,7 @@ public class AudioDeviceManager {
                 }
                 listInfo.append(DeviceNameAlias[devs[i].getType()]);
             }
+            Log.i(TAG, message.toString());
         }
         return listInfo.toString();
     }
@@ -179,7 +181,6 @@ public class AudioDeviceManager {
                 if (isInvalidDevice(devs[i])) {
                     continue;
                 }
-
                 speakers.add(DeviceNameAlias[devs[i].getType()]);
             }
         }
@@ -187,12 +188,10 @@ public class AudioDeviceManager {
     }
 
     public boolean selectSpeaker(int deviceId) {
-        // TODO: need complete
         return false;
     }
 
     public int getCurrentSpeaker() {
-        // TODO: need complete
         return 0;
     }
 
@@ -208,7 +207,7 @@ public class AudioDeviceManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             result += "Address:" + dev.getAddress() + ", ";
         }
-        result += "toString:" + dev.toString() + ", ";
+        result += "toString:" + dev;
         return result;
     }
 
@@ -238,16 +237,14 @@ public class AudioDeviceManager {
 
             if (addedDevices != null && addedDevices.length > 0) {
                 int size = addedDevices.length;
-                String message = "[";
+                StringBuilder message = new StringBuilder("[");
                 for (int i = 0; i < size; i++) {
-                    message += i + " " + parseDeviceInfo(addedDevices[i]) + "; ";
+                    message.append(i).append(" ").append(parseDeviceInfo(addedDevices[i])).append(";\n");
                 }
-                message += "]";
-
-                Log.i(TAG, message);
-                showToast("DeviceAdded:", message);
+                message.append("]");
+                Log.i(TAG, message.toString());
             } else {
-                // do nothing
+                Log.v(TAG, "invalid devices add.");
             }
         }
 
@@ -265,15 +262,15 @@ public class AudioDeviceManager {
 
             if (removedDevices != null && removedDevices.length > 0) {
                 int size = removedDevices.length;
-                String message = "[";
+                StringBuilder message = new StringBuilder("[");
                 for (int i = 0; i < size; i++) {
-                    message += i + " " + parseDeviceInfo(removedDevices[i]) + "; ";
+                    message.append(i).append(" ").append(parseDeviceInfo(removedDevices[i])).append("; ");
                 }
-                message += "]";
-                Log.i(TAG, message);
-                showToast("DeviceRemoved:", message);
+                message.append("]");
+                Log.i(TAG, message.toString());
+                showToast("DeviceRemoved:", message.toString());
             } else {
-                // do nothing
+                Log.v(TAG, "invalid devices remove.");
             }
         }
     }

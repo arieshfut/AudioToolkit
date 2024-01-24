@@ -25,6 +25,15 @@
             android:text="@string/preResearch_oboeParamSet"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <!-- Audio stream latency -->
+        <TextView
+            android:id="@+id/oboeLatencyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/preResearch_oboeLatency" />
     </LinearLayout>
 
     <!-- Record sample rate container -->
