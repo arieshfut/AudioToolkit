@@ -37,6 +37,7 @@ protected:
     int channelCount;
     int restartCount;
     int state;
+    int count = 0;
     bool mIsLatencyDetectionSupported;
 };
 
@@ -77,5 +78,4 @@ private:
     float kTwoPi = kPI * 2;
     double mPhaseIncrement; //  = kFrequent * kTwoPi / (double) sampleRate;
     float mPhase = 0.0;
-
 };

@@ -128,7 +128,7 @@ int AudioStreamRecorder::start() {
                   mAudioStream->getBytesPerSample() * 8, mAudioStream->getBufferSizeInFrames());
         }
     }
-
+    count = 0;
     state = (result == oboe::Result::OK ? STATE_START : STATE_ERROR);
     return static_cast<int>(result);
 }
@@ -141,6 +141,7 @@ void AudioStreamRecorder::stop() {
         mAudioStream->close();
         mAudioStream.reset();
     }
+    count = 0;
     wavFile->close();
     state = STATE_STOP;
 }
@@ -166,16 +167,24 @@ AudioStreamRecorder::onAudioReady(oboe::AudioStream *audioStream, void *audioDat
 }
 
 double AudioStreamRecorder::getCurrentOutputLatencyMillis() {
+    if (count < 3) {
+        count++;
+        return -1.0;
+    }
+
     if (!mIsLatencyDetectionSupported) return -1.0;
 
     std::lock_guard<std::mutex> lock(mLock);
-    if (!mAudioStream) return -1.0;
+    if (!mAudioStream || mAudioStream->getState() != oboe::StreamState::Started) {
+        ALOGE("AudioStreamRecorder state Error while get latency.");
+        return -1.0;
+    }
 
     oboe::ResultWithValue<double> latencyResult = mAudioStream->calculateLatencyMillis();
     if (latencyResult) {
         return latencyResult.value();
     } else {
-        ALOGE("AudioStreamPlayer Error calculating latency: %s", oboe::convertToText(latencyResult.error()));
+        ALOGE("AudioStreamRecorder Error calculating latency: %s", oboe::convertToText(latencyResult.error()));
         return -1.0;
     }
 }
@@ -246,6 +255,7 @@ int AudioStreamPlayer::start() {
         }
     } while (result != oboe::Result::OK && tryCount++ < 3);
 
+    count = 0;
     state = (result == oboe::Result::OK ? STATE_START : STATE_ERROR);
     return static_cast<int>(result);
 }
@@ -258,6 +268,8 @@ void AudioStreamPlayer::stop() {
         mAudioStream->close();
         mAudioStream.reset();
     }
+    count = 0;
+    mIsLatencyDetectionSupported = false;
     state = STATE_STOP;
 }
 
@@ -284,10 +296,18 @@ AudioStreamPlayer::onAudioReady(oboe::AudioStream *audioStream, void *audioData,
 }
 
 double AudioStreamPlayer::getCurrentOutputLatencyMillis() {
+    if (count < 3) {
+        count++;
+        return -1.0;
+    }
+
     if (!mIsLatencyDetectionSupported) return -1.0;
 
     std::lock_guard<std::mutex> lock(mLock);
-    if (!mAudioStream) return -1.0;
+    if (!mAudioStream || mAudioStream->getState() != oboe::StreamState::Started) {
+        ALOGE("AudioStreamPlayer state Error while get latency.");
+        return -1.0;
+    }
 
     oboe::ResultWithValue<double> latencyResult = mAudioStream->calculateLatencyMillis();
     if (latencyResult) {
