@@ -47,7 +47,7 @@ OboeAudioStream::OboeAudioStream() :
 
 bool OboeAudioStream::updateDeviceId(int devId) {
     deviceId = devId;
-    ALOGI("OboeAudioStream updateDeviceId and restart");
+    ALOGI("OboeAudioStream updateDeviceId=%d and restart", deviceId);
     return restart();
 }
 
@@ -311,6 +311,7 @@ double AudioStreamPlayer::getCurrentOutputLatencyMillis() {
 
     oboe::ResultWithValue<double> latencyResult = mAudioStream->calculateLatencyMillis();
     if (latencyResult) {
+        ALOGI("AudioStreamPlayer latency: %f", latencyResult.value());
         return latencyResult.value();
     } else {
         ALOGE("AudioStreamPlayer Error calculating latency: %s", oboe::convertToText(latencyResult.error()));

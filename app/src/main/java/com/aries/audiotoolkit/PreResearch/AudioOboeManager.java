@@ -18,7 +18,9 @@ public class AudioOboeManager {
     private final static String TAG = "AudioOboeManager";
     private static AudioOboeManager instance;
 
-    private int deviceId = 0;
+    private int recordDeviceId = 0;
+    private int playDeviceId = 0;
+    private String playFile = "";
     private int sampleRate = 16000;
     private int channelCount = 1;
     private int bit = 16;
@@ -29,6 +31,7 @@ public class AudioOboeManager {
     private boolean btEnable = false;
     private boolean needRecorder = false;
     private boolean needPlayer = false;
+    private boolean isRunning = false;
 
 
     // Used to load the 'native_oboe_manager' library on application startup.
@@ -84,33 +87,29 @@ public class AudioOboeManager {
         return 0;
     }
 
-    public void setOboeRecordParam(int devId, int sample, int channel, int b) {
-        if (!needRecorder) {
-            return;
-        }
-        if (btEnable) {
-            audioManager.startBluetoothSco();
-            audioManager.setBluetoothScoOn(true);
-            deviceId = getBluetoothDevId(AudioManager.GET_DEVICES_INPUTS);
-        } else {
-            deviceId = devId;
-        }
+    public void setOboeParam(int devId, int sample, int channel, int b, int outputDeviceId) {
+        // set Oboe Record Param(devId, sample, channel, bit);
+        recordDeviceId = devId;
         sampleRate = sample;
         channelCount = channel;
         bit = b;
 
-        NativeOboeInitRecorder(deviceId, sampleRate, channelCount, bit);
-    }
+        // set Oboe Play Param(outputDeviceId);
+        playFile = fileDir + "test.wav";
+        playDeviceId = outputDeviceId;
 
-    public void setOboePlayParam(int deviceId) {
-        if (!needPlayer) {
-            return;
-        }
-        String playDir = fileDir + "test.wav";
         if (btEnable) {
-            NativeOboeInitPlayer(playDir, getBluetoothDevId(AudioManager.GET_DEVICES_OUTPUTS));
-        } else {
-            NativeOboeInitPlayer(playDir, deviceId);
+            enableBluetoothSco(true);
+            recordDeviceId = getBluetoothDevId(AudioManager.GET_DEVICES_INPUTS);
+            playDeviceId = getBluetoothDevId(AudioManager.GET_DEVICES_OUTPUTS);
+        }
+
+        if (needRecorder) {
+            NativeOboeInitRecorder(recordDeviceId, sampleRate, channelCount, bit);
+        }
+
+        if (needPlayer) {
+            NativeOboeInitPlayer(playFile, playDeviceId);
         }
     }
 
@@ -118,6 +117,7 @@ public class AudioOboeManager {
         Log.d(TAG, "Start Oboe Thread now.");
         oboeThread = new OboeThread("OboeJavaThread");
         oboeThread.start();
+        isRunning = true;
     }
 
     public void stop() {
@@ -126,23 +126,35 @@ public class AudioOboeManager {
             oboeThread.stopThread();
             oboeThread = null;
         }
+
+        enableBluetoothSco(false);
+        btEnable = false;
+        isRunning = false;
     }
 
-    public void updateBluetoothId(boolean isEnable) {
-        if (isEnable) {
+    public void setBluetoothScoProp(boolean isEnable) {
+        btEnable = isEnable;
+        if (isRunning) {
+            enableBluetoothSco(btEnable);
+            if (btEnable) {
+                NativeUpdateDeviceId(getBluetoothDevId(AudioManager.GET_DEVICES_INPUTS), getBluetoothDevId(AudioManager.GET_DEVICES_OUTPUTS));
+            } else {
+                NativeUpdateDeviceId(0, getA2dpDevId());
+            }
+        }
+    }
+
+    private void enableBluetoothSco(boolean enable) {
+        if (enable) {
             audioManager.startBluetoothSco();
             audioManager.setBluetoothScoOn(true);
-            NativeUpdateDeviceId(getBluetoothDevId(AudioManager.GET_DEVICES_INPUTS), getBluetoothDevId(AudioManager.GET_DEVICES_OUTPUTS));
         } else {
             audioManager.setBluetoothScoOn(false);
             audioManager.stopBluetoothSco();
-            /*try {
-                sleep(4000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }*/
-            NativeUpdateDeviceId(0, getA2dpDevId());
         }
+        Log.i(TAG, "Set bluetoothSco=" + (enable ? "on" : "off")
+                + "， and now BluetoothSco=" + (audioManager.isBluetoothScoOn() ? "on" : "off"));
+        Log.i(TAG, "Bluetooth a2dp=" + (audioManager.isBluetoothA2dpOn() ? "on" : "off"));
     }
 
     /**
