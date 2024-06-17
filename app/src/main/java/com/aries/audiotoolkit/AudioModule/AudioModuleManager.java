@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -290,6 +291,18 @@ public class AudioModuleManager {
         }
 
         return audioManager.getStreamVolume(streamType) + "/" + audioManager.getStreamMaxVolume(streamType);
+    }
+
+    public String getMuteInfo() {
+        if (audioManager == null) {
+            return " ";
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return (audioManager.isStreamMute(AudioManager.STREAM_MUSIC) ? "true" : "false");
+        } else {
+            return " ";
+        }
     }
 
     public String getPhoneState() {

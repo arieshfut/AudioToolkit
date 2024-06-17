@@ -38,6 +38,7 @@
     <string name="needShare">共享音频</string>
     <string name="needPlayer">播放音频</string>
     <string name="audioVolume">Volume：%s</string>
+    <string name="audioPlayMute">Mute：%s</string>
     <string name="audioLatency">Latency：%s</string>
     <string name="micList">麦克风设备</string>
     <string name="spkList">扬声器设备</string>

@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,13 +137,23 @@ public class FirstFragment extends Fragment {
     ) {
         MainActivity.preMenuOrder = 0;
         binding = FragmentFirstBinding.inflate(inflater, container, false);
-        return binding.getRoot();
 
+        return binding.getRoot();
     }
 
     @SuppressLint("SetTextI18n")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                processKeyEvent(keyCode, event);
+                return false; // 返回false，让其他的监听器继续处理事件
+            }
+        });
 
         // 初始化组件
         mAudioModeSpinner = getView().findViewById(R.id.audioModeSpinner);
@@ -331,10 +342,16 @@ public class FirstFragment extends Fragment {
         mScoStateSwitch.setChecked(mAudioModule.isBtScoOn());
 
         updateVolume();
+        updateVolumeMute();
         updatePhoneState();
         updateSpeakerList();
         updateMicMuteState();
-
+        binding.audioVolumeText.setOnClickListener(view2 -> {
+            updateVolume();
+        });
+        binding.audioPlayMuteText.setOnClickListener(view2 -> {
+            updateVolumeMute();
+        });
         binding.audioMicListText.setText("麦克风：" + mAudioModule.micInfo());
         binding.audioMicListText.setOnClickListener(view2 -> {
             binding.audioMicListText.setText("麦克风：" + mAudioModule.micInfo());
@@ -373,82 +390,6 @@ public class FirstFragment extends Fragment {
                 MainActivity.showToast("当前版本不支持共享音频");
             }
         }
-    }
-
-    private void startAudioTest() {
-        if (isStarting) {
-            MainActivity.showToast("启动新的测试，请停止当前进行中的测试");
-            return;
-        }
-
-        if (!(needRecord | needShare | needPlay)) {
-            MainActivity.showToast("请选择测试项：录音、共享音频或播放");
-            return;
-        }
-
-        setParameterForTest();
-
-        if (!needShare) {
-            runAudioTest();
-        } else {
-            shareDataRunnable.run();
-        }
-    }
-
-    private void runAudioTest() {
-        // 执行测试内容
-        int startState = mAudioModule.startAll();
-        switch (startState) {
-            case -3:
-                MainActivity.showToast("启动测试失败，请检测共享音频参数设置");
-                break;
-            case -2:
-                MainActivity.showToast("启动测试失败，请检测录音参数设置");
-                break;
-            case -1:
-                MainActivity.showToast("启动测试失败，请检测设备状态");
-                break;
-            case 0:
-                MainActivity.showToast("测试进行中...");
-                break;
-            default:
-                MainActivity.showToast("测试运行中");
-                break;
-        }
-
-        if (startState >= 0) {
-            // 更新UI
-            isStarting = true;
-            binding.buttonAudioTest.setText("停止测试");
-        } else {
-            isStarting = false;
-            binding.buttonAudioTest.setText("开始测试");
-        }
-        update3AState(mAudioModule.isEffectEnable());
-        updateVolume();
-        updatePhoneState();
-        updateSpeakerList();
-    }
-
-    private void stopAudioTest() {
-        if (!isStarting) {
-            MainActivity.showToast("当前无测试运行");
-            return;
-        }
-
-        // 停止测试内容
-        int stopState = mAudioModule.stopAll();
-        if (stopState < 0) {
-            MainActivity.showToast("停止测试时发生异常");
-        }
-
-        // 更新UI
-        isRecordSetReady = false;
-        isPlaySetReady = false;
-        isStarting = false;
-        update3AState(mAudioModule.isEffectEnable());
-        MainActivity.showToast("测试结束");
-        binding.buttonAudioTest.setText("开始测试");
     }
 
     private void setRecordParameter() {
@@ -498,7 +439,7 @@ public class FirstFragment extends Fragment {
             int wavFileIndex = binding.playerFileSpinner.getSelectedItemPosition();
             switch (wavFileIndex) {
                 case 1:
-                // case 2:
+                    // case 2:
                 default:
                     fileName = "Eagles_Hotel_California.wav";
                     break;
@@ -556,6 +497,83 @@ public class FirstFragment extends Fragment {
         }
     }
 
+    private void startAudioTest() {
+        if (isStarting) {
+            MainActivity.showToast("启动新的测试，请停止当前进行中的测试");
+            return;
+        }
+
+        if (!(needRecord | needShare | needPlay)) {
+            MainActivity.showToast("请选择测试项：录音、共享音频或播放");
+            return;
+        }
+
+        setParameterForTest();
+
+        if (!needShare) {
+            runAudioTest();
+        } else {
+            shareDataRunnable.run();
+        }
+    }
+
+    private void runAudioTest() {
+        // 执行测试内容
+        int startState = mAudioModule.startAll();
+        switch (startState) {
+            case -3:
+                MainActivity.showToast("启动测试失败，请检测共享音频参数设置");
+                break;
+            case -2:
+                MainActivity.showToast("启动测试失败，请检测录音参数设置");
+                break;
+            case -1:
+                MainActivity.showToast("启动测试失败，请检测设备状态");
+                break;
+            case 0:
+                MainActivity.showToast("测试进行中...");
+                break;
+            default:
+                MainActivity.showToast("测试运行中");
+                break;
+        }
+
+        if (startState >= 0) {
+            // 更新UI
+            isStarting = true;
+            binding.buttonAudioTest.setText("停止测试");
+        } else {
+            isStarting = false;
+            binding.buttonAudioTest.setText("开始测试");
+        }
+        update3AState(mAudioModule.isEffectEnable());
+        updateVolume();
+        updateVolumeMute();
+        updatePhoneState();
+        updateSpeakerList();
+    }
+
+    private void stopAudioTest() {
+        if (!isStarting) {
+            MainActivity.showToast("当前无测试运行");
+            return;
+        }
+
+        // 停止测试内容
+        int stopState = mAudioModule.stopAll();
+        if (stopState < 0) {
+            MainActivity.showToast("停止测试时发生异常");
+        }
+
+        // 更新UI
+        isRecordSetReady = false;
+        isPlaySetReady = false;
+        isStarting = false;
+        update3AState(mAudioModule.isEffectEnable());
+        MainActivity.showToast("测试结束");
+        binding.buttonAudioTest.setText("开始测试");
+    }
+
     @SuppressLint("SetTextI18n")
     public void update3AState(boolean on) {
         binding.audio3AText.setText("内置3A状态：" + (on ? "on" : "off"));
@@ -564,6 +582,11 @@ public class FirstFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     public void updateVolume() {
         binding.audioVolumeText.setText("Volume:" + mAudioModule.getVolumeInfo());
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void updateVolumeMute() {
+        binding.audioPlayMuteText.setText("Spk静音:" + mAudioModule.getMuteInfo());
     }
 
     @SuppressLint("SetTextI18n")
@@ -610,11 +633,25 @@ public class FirstFragment extends Fragment {
                 return;
             }
 
+            Log.i(TAG, "BroadcastReceiver=" + action);
             if (VOLUME_CHANGED_ACTION.equals(action)) {
                 updateVolume();
+                updateVolumeMute();
             } else if (MICROPHONE_MUTE_CHANGED.equals(action)) {
                 updateMicMuteState();
             }
         }
     }
+
+    private void processKeyEvent(int keyCode, KeyEvent event) {
+        StringBuilder info =  new StringBuilder();
+        info.append(KeyEvent.keyCodeToString(keyCode));
+        info.append(", scanCode=").append(event.getScanCode());
+        info.append(", metaState=").append(event.getMetaState());
+        info.append(", repeat=").append(event.getRepeatCount());
+        info.append(", action=").append(event.getAction() == KeyEvent.ACTION_DOWN ? "down" : "up");
+        info.append("]");
+        MainActivity.showToast(info.toString());
+    }
+
 }
