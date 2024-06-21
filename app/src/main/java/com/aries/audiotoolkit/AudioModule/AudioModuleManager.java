@@ -5,7 +5,6 @@ import static androidx.core.content.ContextCompat.startForegroundService;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -15,6 +14,8 @@ import android.util.Log;
 import com.aries.audiotoolkit.MainActivity;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class AudioModuleManager {
@@ -32,7 +33,6 @@ public class AudioModuleManager {
     private AudioPlayerThread audioPlayer;
     private AudioTrackThread audioTrack;
     private AudioEffectThread audioEffect;
-    private BluetoothManager bluetoothManager;
     private AudioDeviceManager audioDevice;
     private AudioVolumeManager audioVolume;
     private AudioManager audioManager;
@@ -73,12 +73,27 @@ public class AudioModuleManager {
         audioPlayer = new AudioPlayerThread();
         audioTrack = new AudioTrackThread();
         audioEffect = AudioEffectThread.getInstance();
-        bluetoothManager = new BluetoothManager(audioManager);
-        audioDevice = new AudioDeviceManager(audioManager);
-        audioVolume = new AudioVolumeManager(audioManager);
+        audioDevice = AudioDeviceManager.getInstance();
+        audioVolume = AudioVolumeManager.getInstance();
 
-        audioDevice.start();
-        audioVolume.start();
+        new Timer().schedule(new TimerTask() {
+            public void run() {
+                if (audioManager != null) {
+                    StringBuilder msg = new StringBuilder();
+                    msg.append("audioMode=").append(audioManager.getMode());
+                    msg.append(" maxVol=").append(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+                    msg.append(" currentVol=").append(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        msg.append(" isVolumeFixed=").append(audioManager.isVolumeFixed());
+                    }
+                    msg.append(" isBtScoOn=").append(audioManager.isBluetoothScoOn());
+                    msg.append(" isMicMute=").append(audioManager.isMicrophoneMute());
+                    msg.append(" isSpkOn=").append(audioManager.isSpeakerphoneOn());
+                    Log.i(TAG, String.valueOf(msg));
+                }
+            }
+        }, 0, 10000);
+
         state = STATE_DEFAULT;
     }
 
@@ -87,8 +102,6 @@ public class AudioModuleManager {
     }
 
     public void finalize() {
-        audioDevice.stop();
-        audioVolume.stop();
         Log.d(TAG, "destructor");
     }
 
@@ -99,30 +112,27 @@ public class AudioModuleManager {
         mAudioMode = mode;
     }
 
-    public int setRecordParameter(int audioSource, int sample, int channel) {
+    public void setRecordParameter(int audioSource, int sample, int channel) {
         if (audioRecord.checkRecordParameter(audioSource, sample, channel) < 0) {
-            return -1;
+            return;
         }
         recordSource = audioSource;
         recordSampleRate = sample;
         recordChannel = channel;
 
-        return 0;
     }
 
-    public int setPlayerParameter(String assetFle, boolean isAssetFile, boolean needAudioTrack) {
+    public void setPlayerParameter(String assetFle, boolean isAssetFile, boolean needAudioTrack) {
         playerFle = assetFle;
         isAssetWav = isAssetFile;
         useAudioTrack = needAudioTrack;
-        return 0;
     }
 
-    public int setShareParameters(int sample, int channel, int usage, Intent data) {
+    public void setShareParameters(int sample, int channel, int usage, Intent data) {
         shareSampleRate = sample;
         shareChannel = channel;
         shareUsage = usage;
         shareData = data;
-        return 0;
     }
 
     public boolean isEffectEnable() {
@@ -132,8 +142,8 @@ public class AudioModuleManager {
         return audioEffect.setEffectEnable(on);
     }
 
-    public boolean isBtScoOn() { return bluetoothManager.isBtScoOn(); }
-    public void switchBtScoState() { bluetoothManager.switchBtScoState(); }
+    public boolean isBtScoOn() { return audioDevice.isBtScoOn(); }
+    public void switchBtScoState() { audioDevice.switchBtScoState(); }
 
     public void setMicMute(boolean mute) { audioManager.setMicrophoneMute(mute); }
     public boolean isMicMute() { return audioManager.isMicrophoneMute(); }
@@ -162,11 +172,13 @@ public class AudioModuleManager {
                         return -1;
                     }
                     audioTrack.start();
+                    isPlaying = true;
                 }
             } else {
                 if (audioPlayer != null) {
                     audioPlayer.setPlayerParam(playerFle, isAssetWav);
                     audioPlayer.start(getAudioMode());
+                    isPlaying = true;
                 }
             }
         }
@@ -215,10 +227,12 @@ public class AudioModuleManager {
             if (useAudioTrack) {
                 if (audioTrack != null) {
                     audioTrack.stop();
+                    isPlaying = false;
                 }
             } else {
                 if (audioPlayer != null) {
                     audioPlayer.stop();
+                    isPlaying = false;
                 }
             }
         }

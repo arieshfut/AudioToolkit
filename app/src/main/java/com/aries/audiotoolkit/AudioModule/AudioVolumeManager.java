@@ -17,18 +17,22 @@ public class AudioVolumeManager {
     private AudioManager audioManager;
     private final int maxVolumeIndex;
 
-    public AudioVolumeManager(AudioManager manager) {
+    private static volatile AudioVolumeManager instance = null;
+    public static AudioVolumeManager getInstance() {
+        if (instance == null) {
+            synchronized (AudioVolumeManager.class) {
+                if (instance == null) {
+                    instance = new AudioVolumeManager();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private AudioVolumeManager() {
         context = MainActivity.getContext();
-        audioManager = manager;
+        audioManager = ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE));
         maxVolumeIndex = getMaxVolume();
-    }
-
-    public int start() {
-        return 0;
-    }
-
-    public int stop() {
-        return 0;
     }
 
     private int getMaxVolume() {
