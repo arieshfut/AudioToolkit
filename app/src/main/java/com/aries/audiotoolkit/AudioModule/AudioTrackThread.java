@@ -32,25 +32,24 @@ public class AudioTrackThread {
     private static final int BUFFERS_PER_SECOND = 1000 / CALLBACK_BUFFER_SIZE_MS;
 
     // The TrackThread is allowed to wait for successful call to join()
-    // but the wait times out afther this amount of time.
+    // but the wait times out after this amount of time.
     private static final long AUDIO_TRACK_THREAD_JOIN_TIMEOUT_MS = 2000;
 
-    private AudioTrack audioTrack = null;
-    private TrackThread audioThread = null;
-    private WaveFile wavFile = null;
+    private AudioTrack mAudioTrack = null;
+    private TrackThread mAudioThread = null;
+    private WaveFile mWavFile = null;
 
-    private int mode;
-    private int sampleRate;
-    private int channel;
-    private int channelConfig;
-    private int bit;
-    private int format;
-    private int bytesPerFrame;
-    private int usage;
-    private int contentType;
-    private int streamType;
-    private int bufferSize;
-    private byte[] pcmData;
+    private int mMode;
+    private int mSampleRate;
+    private int mChannel;
+    private int mChannelConfig;
+    private int mBit;
+    private int mFormat;
+    private int mUsage;
+    private int mContentType;
+    private int mStreamType;
+    private int mBufferSize;
+    private byte[] mPcmData;
 
     private int state;
 
@@ -77,7 +76,7 @@ public class AudioTrackThread {
                 // writing up to bufferSizeInBytes (from constructor) before starting.
                 // This priming will avoid an immediate underrun, but is not required.
                 // TODO(henrika): initial tests have shown that priming is not required.
-                audioTrack.play();
+                mAudioTrack.play();
             } catch (IllegalStateException e) {
                 Log.d(TAG, "AudioTrack play failed, IllegalStateException: " + e.getMessage());
                 releaseAudioResources();
@@ -88,15 +87,15 @@ public class AudioTrackThread {
             // TODO(henrika): consider calling reportWebRtcAudioTrackStartError()
             // and release audio resources here as well. For now, let the thread start
             // and hope that the audio session can be restored later.
-            if (audioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
+            if (mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
                 Log.w(TAG, "AudioTrack failed to enter playing state.");
             }
 
             int sizeFromWav;
             while (keepAlive) {
-                sizeFromWav = wavFile.readBuffer(pcmData);
-                if (sizeFromWav == bufferSize) {
-                    int bytesWritten = audioTrack.write(pcmData, 0, bufferSize);
+                sizeFromWav = mWavFile.readBuffer(mPcmData);
+                if (sizeFromWav == mBufferSize) {
+                    int bytesWritten = mAudioTrack.write(mPcmData, 0, mBufferSize);
                     if (bytesWritten != sizeFromWav) {
                         Log.e(TAG, "AudioTrack.write played invalid number of bytes: " + bytesWritten);
                         // If a write() returns a negative value, an error has occurred.
@@ -108,8 +107,8 @@ public class AudioTrackThread {
                     }
                 } else if (sizeFromWav == -1) {
                     Log.w(TAG, "Wav file read error or EndOfFile, reopen wav file and continue play.");
-                    wavFile.close();
-                    wavFile.open();
+                    mWavFile.close();
+                    mWavFile.open();
                 } else if (sizeFromWav == -2) {
                     Log.e(TAG, "Wav file open error, stop play.");
                     break;
@@ -122,10 +121,10 @@ public class AudioTrackThread {
             // Stops playing the audio data. Since the instance was created in
             // MODE_STREAM mode, audio will stop playing after the last buffer that
             // was written has been played.
-            if (audioTrack != null) {
+            if (mAudioTrack != null) {
                 Log.d(TAG, "Stopping the audio track...");
                 try {
-                    audioTrack.stop();
+                    mAudioTrack.stop();
                     Log.d(TAG, "The audio track has now been stopped.");
                 } catch (Exception e) {
                     Log.e(TAG, "AudioTrack.stop failed: " + e.getMessage());
@@ -146,66 +145,65 @@ public class AudioTrackThread {
         state = STATE_DEFAULT;
     }
 
-    public boolean setTrackParam(String wavFilePath, boolean isAssetWav) {
-        wavFile = new WaveFile(wavFilePath, isAssetWav);
-        return true;
+    public void setTrackParam(String wavFilePath, boolean isAssetWav) {
+        mWavFile = new WaveFile(wavFilePath, isAssetWav);
     }
 
     private boolean setAudioParam() {
-        sampleRate = wavFile.sampleRate;
-        channel = wavFile.numChannels;
-        channelConfig = (channel == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO);
-        bit = wavFile.bitsPerSample;
-        switch (bit) {
+        mSampleRate = mWavFile.sampleRate;
+        mChannel = mWavFile.numChannels;
+        mChannelConfig = (mChannel == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO);
+        mBit = mWavFile.bitsPerSample;
+        switch (mBit) {
             case 8:
-                format = AudioFormat.ENCODING_PCM_8BIT;
+                mFormat = AudioFormat.ENCODING_PCM_8BIT;
                 break;
             case 16:
-                format = AudioFormat.ENCODING_PCM_16BIT;
+                mFormat = AudioFormat.ENCODING_PCM_16BIT;
                 break;
             case 32:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    format = AudioFormat.ENCODING_PCM_FLOAT;
+                    mFormat = AudioFormat.ENCODING_PCM_FLOAT;
                 } else {
-                    Log.e(TAG, "wav bit " + bit + "not support on version < LOLLIPOP.");
+                    Log.e(TAG, "wav bit " + mBit + "not support on version < LOLLIPOP.");
                     return false;
                 }
                 break;
             default:
-                Log.e(TAG, "wav bit " + bit + "not support.");
+                Log.e(TAG, "wav bit " + mBit + "not support.");
                 return false;
         }
-        bytesPerFrame = channel * (bit / 8);
-        bufferSize = bytesPerFrame * (sampleRate / BUFFERS_PER_SECOND);
-        pcmData = new byte[bufferSize];
+        mBufferSize = mChannel * (mBit / 8) * (mSampleRate / BUFFERS_PER_SECOND);
+        mPcmData = new byte[mBufferSize];
 
-        switch (mode) {
+        switch (mMode) {
             case AudioManager.MODE_RINGTONE:
-                usage = AudioAttributes.USAGE_NOTIFICATION_RINGTONE;
-                contentType = AudioAttributes.CONTENT_TYPE_SONIFICATION;
-                streamType = AudioManager.STREAM_RING;
+                mUsage = AudioAttributes.USAGE_NOTIFICATION_RINGTONE;
+                mContentType = AudioAttributes.CONTENT_TYPE_SONIFICATION;
+                mStreamType = AudioManager.STREAM_RING;
                 break;
             case AudioManager.MODE_IN_COMMUNICATION:
-                usage = AudioAttributes.USAGE_VOICE_COMMUNICATION;
-                contentType = AudioAttributes.CONTENT_TYPE_SPEECH;
-                streamType = AudioManager.STREAM_VOICE_CALL;
+                mUsage = AudioAttributes.USAGE_VOICE_COMMUNICATION;
+                mContentType = AudioAttributes.CONTENT_TYPE_SPEECH;
+                mStreamType = AudioManager.STREAM_VOICE_CALL;
                 break;
             default:
-                usage = AudioAttributes.USAGE_MEDIA;
-                contentType = AudioAttributes.CONTENT_TYPE_MUSIC;
-                streamType = AudioManager.STREAM_MUSIC;
+                mUsage = AudioAttributes.USAGE_MEDIA;
+                mContentType = AudioAttributes.CONTENT_TYPE_MUSIC;
+                mStreamType = AudioManager.STREAM_MUSIC;
                 break;
         }
+        Log.d(TAG, "set param " + getThreadInfo());
         return true;
     }
 
     public boolean init(int audioMode) {
-        if (!wavFile.isNormalWave) {
+        if (!mWavFile.isNormalWave) {
             Log.e(TAG, "wav file format not normal, please check or choose other file.");
             return false;
         }
 
-        mode = audioMode;
+        mMode = audioMode;
         if (!setAudioParam()) {
             Log.e(TAG, "wav audio format error.");
             return false;
@@ -214,26 +212,26 @@ public class AudioTrackThread {
         // Get the minimum buffer size required for the successful creation of an
         // AudioTrack object to be created in the MODE_STREAM mode.
         // Note that this size doesn't guarantee a smooth playback under load.
-        int minBufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, format);
+        int minBufferSize = AudioTrack.getMinBufferSize(mSampleRate, mChannelConfig, mFormat);
         // For the streaming mode, data must be written to the audio sink in
         // chunks of size (given by byteBuffer.capacity()) less than or equal
         // to the total buffer size |minBufferSizeInBytes|. But, we have seen
         // reports of "getMinBufferSize(): error querying hardware". Hence, it
         // can happen that |minBufferSizeInBytes| contains an invalid value.
-        if (minBufferSize < bufferSize) {
+        if (minBufferSize < mBufferSize) {
             Log.e(TAG, "AudioTrack.getMinBufferSize returns an invalid value.");
             return false;
         }
 
         // Ensure that prevision audio session was stopped correctly before trying
         // to create a new AudioTrack.
-        if (audioTrack != null) {
+        if (mAudioTrack != null) {
             Log.d(TAG, "Conflict with existing AudioTrack.");
             return false;
         }
         try {
-            audioTrack = createAudioTrack();
-            if (audioTrack == null) {
+            mAudioTrack = createAudioTrack();
+            if (mAudioTrack == null) {
                 Log.d(TAG, "Initialization of AudioTrack is NULL.");
                 releaseAudioResources();
                 return false;
@@ -247,48 +245,47 @@ public class AudioTrackThread {
         // It can happen that an AudioTrack is created but it was not successfully
         // initialized upon creation. Seems to be the case e.g. when the maximum
         // number of globally available audio tracks is exceeded.
-        if (audioTrack.getState() != AudioTrack.STATE_INITIALIZED) {
+        if (mAudioTrack.getState() != AudioTrack.STATE_INITIALIZED) {
             Log.d(TAG, "Initialization of audio track failed.");
             releaseAudioResources();
             return false;
         }
 
         state = STATE_INIT;
-        Log.d(TAG, "init AudioTrack success with sample=" + sampleRate
-                + ", channel=" + channel + ", bit=" + bit + ", bufferSize=" + bufferSize
-                + ", usage=" + usage + ", contentType=" + contentType + ", streamType=" + streamType
-                + ", state=" + audioTrack.getState()
-                + ", sessionId=" + audioTrack.getAudioSessionId());
+        Log.i(TAG, "init AudioTrack success with sample=" + mSampleRate
+                + ", channel=" + mChannel + ", bit=" + mBit + ", bufferSize=" + mBufferSize
+                + ", usage=" + mUsage + ", contentType=" + mContentType
+                + ", streamType=" + mStreamType + ", state=" + mAudioTrack.getState()
+                + ", sessionId=" + mAudioTrack.getAudioSessionId());
         return true;
     }
 
     public boolean start() {
         Log.d(TAG, "start play out");
-        if (audioTrack.getState() != AudioTrack.STATE_INITIALIZED) {
+        if (mAudioTrack.getState() != AudioTrack.STATE_INITIALIZED) {
             Log.d(TAG, "AudioTrack instance is not successfully initialized.");
             return false;
         }
 
-        if (wavFile.canReadBuffer()) {
-            wavFile.open();
-            audioThread = new TrackThread("TrackThread");
-            audioThread.start();
+        if (mWavFile.canReadBuffer()) {
+            mWavFile.open();
+            mAudioThread = new TrackThread("TrackThread");
+            mAudioThread.start();
             state = STATE_START;
         }
-
         return true;
     }
 
     public boolean stop() {
         Log.d(TAG, "stop play out");
         if (state == STATE_START) {
-            if(audioThread != null) {
-                audioThread.stopThread();
+            if(mAudioThread != null) {
+                mAudioThread.stopThread();
             }
         }
 
-        final Thread aThread = audioThread;
-        audioThread = null;
+        final Thread aThread = mAudioThread;
+        mAudioThread = null;
         if (aThread != null) {
             Log.d(TAG, "Stopping the TrackThread...");
             aThread.interrupt();
@@ -299,7 +296,7 @@ public class AudioTrackThread {
         }
 
         releaseAudioResources();
-        wavFile.close();
+        mWavFile.close();
         state = STATE_STOP;
         return true;
     }
@@ -308,9 +305,9 @@ public class AudioTrackThread {
     // It allows certain platforms or routing policies to use this information for more
     // refined volume or routing decisions.
     private AudioTrack createAudioTrack() {
-        int nativeSampleRate = AudioTrack.getNativeOutputSampleRate(streamType);
+        int nativeSampleRate = AudioTrack.getNativeOutputSampleRate(mStreamType);
         Log.d(TAG, "nativeOutputSampleRate: " + nativeSampleRate);
-        if (sampleRate != nativeSampleRate) {
+        if (mSampleRate != nativeSampleRate) {
             Log.w(TAG, "Unable to use fast mode since requested sample rate is not native");
         }
         // Create an audio track where the audio usage is for VoIP and the content type is speech.
@@ -318,19 +315,19 @@ public class AudioTrackThread {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 return new AudioTrack(
                         new AudioAttributes.Builder()
-                                .setUsage(usage)
-                                .setContentType(contentType)
+                                .setUsage(mUsage)
+                                .setContentType(mContentType)
                                 .build(),
                         new AudioFormat.Builder()
-                                .setEncoding(format)
-                                .setSampleRate(sampleRate)
-                                .setChannelMask(channel)
+                                .setEncoding(mFormat)
+                                .setSampleRate(mSampleRate)
+                                .setChannelMask(mChannelConfig)
                                 .build(),
-                        bufferSize,
+                        mBufferSize,
                         AudioTrack.MODE_STREAM,
                         AudioManager.AUDIO_SESSION_ID_GENERATE);
             } else {
-                return new AudioTrack(streamType, sampleRate, channel, format, bufferSize,
+                return new AudioTrack(mStreamType, mSampleRate, mChannel, mFormat, mBufferSize,
                         AudioTrack.MODE_STREAM, 0);
             }
         } catch (UnsupportedOperationException e) {
@@ -342,19 +339,12 @@ public class AudioTrackThread {
         }
     }
 
-    // Helper method which throws an exception  when an assertion has failed.
-    private static void assertTrue(boolean condition) {
-        if (!condition) {
-            throw new AssertionError("Expected condition to be true");
-        }
-    }
-
     // Releases the native AudioTrack resources.
     private void releaseAudioResources() {
         Log.d(TAG, "releaseAudioResources");
-        if (audioTrack != null) {
-            audioTrack.release();
-            audioTrack = null;
+        if (mAudioTrack != null) {
+            mAudioTrack.release();
+            mAudioTrack = null;
         }
     }
 

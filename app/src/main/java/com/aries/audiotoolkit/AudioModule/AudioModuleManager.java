@@ -76,7 +76,7 @@ public class AudioModuleManager {
         audioDevice = AudioDeviceManager.getInstance();
         audioVolume = AudioVolumeManager.getInstance();
 
-        new Timer().schedule(new TimerTask() {
+        /*new Timer().schedule(new TimerTask() {
             public void run() {
                 if (audioManager != null) {
                     StringBuilder msg = new StringBuilder();
@@ -92,7 +92,7 @@ public class AudioModuleManager {
                     Log.i(TAG, String.valueOf(msg));
                 }
             }
-        }, 0, 10000);
+        }, 0, 10000);*/
 
         state = STATE_DEFAULT;
     }
@@ -171,14 +171,12 @@ public class AudioModuleManager {
                         stopAll();
                         return -1;
                     }
-                    audioTrack.start();
-                    isPlaying = true;
+                    isPlaying = audioTrack.start();
                 }
             } else {
                 if (audioPlayer != null) {
                     audioPlayer.setPlayerParam(playerFle, isAssetWav);
-                    audioPlayer.start(getAudioMode());
-                    isPlaying = true;
+                    isPlaying = (audioPlayer.start(getAudioMode()) == 0);
                 }
             }
         }
@@ -320,7 +318,7 @@ public class AudioModuleManager {
     }
 
     public String getPhoneState() {
-        String phoneState = "None";
+        String phoneState = " ";
         if (audioManager != null) {
             TelephonyManager telephone = (TelephonyManager) MainActivity.getContext().getSystemService(Context.TELEPHONY_SERVICE);
             if (telephone != null) {
@@ -332,7 +330,7 @@ public class AudioModuleManager {
                         phoneState = "Ringing";
                         break;
                     default:
-                        phoneState = "None";
+                        phoneState = " ";
                         break;
                 }
             }

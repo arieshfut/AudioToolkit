@@ -43,7 +43,7 @@
     <string name="micList">麦克风设备</string>
     <string name="spkList">扬声器设备</string>
     <string name="recordPath">录音文件路径</string>
-    <string name="audioCall">通话状态：%s</string>
+    <string name="audioCall">通话： </string>
     <string name="micMute">Mic静音</string>
     <string name="audioState">查询音频状态</string>
     <string name="preResearch">预研测试</string>

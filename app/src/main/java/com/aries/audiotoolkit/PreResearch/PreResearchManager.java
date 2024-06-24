@@ -56,8 +56,8 @@ public class PreResearchManager {
         audioOboe.setOboeParam(inputDevId, sample, channel, bit, outputDev);
     }
 
-    public void setBluetoothScoProp(boolean btEnable) {
-        audioOboe.setBluetoothScoProp(btEnable);
+    public boolean setBluetoothScoProp(boolean btEnable) {
+        return audioOboe.setBluetoothScoProp(btEnable);
     }
 
     public boolean isLatencyDetectionSupported() {

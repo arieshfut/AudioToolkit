@@ -82,7 +82,7 @@ public class SecondFragment extends Fragment {
         });
 
         binding.oboeBluetoothSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            preResearch.setBluetoothScoProp(isChecked);
+            binding.oboeBluetoothSwitch.setChecked(preResearch.setBluetoothScoProp(isChecked));
         });
 
         binding.oboeAudioApiSpinner.setSelection(0); // Unspecified系统默认

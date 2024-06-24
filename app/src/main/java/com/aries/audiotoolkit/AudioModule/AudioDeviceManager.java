@@ -129,6 +129,26 @@ public class AudioDeviceManager {
         }
     }
 
+    public boolean hasBluetoothDev() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return hasBluetoothDevUpperMarshmallow();
+        } else {
+            return hasBluetoothDevLowerLollipop();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean hasBluetoothDevUpperMarshmallow() {
+        AudioDeviceInfo[] inputDevs = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+        for (AudioDeviceInfo dev : inputDevs) {
+            if (dev.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Build.VERSION.SDK_INT < Build.VERSION_CODES.M
      */

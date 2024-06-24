@@ -1,5 +1,6 @@
 package com.aries.audiotoolkit.AudioModule;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -36,7 +37,6 @@ public class AudioPlayerThread {
         mWavFilePath = null;
         playerStream = null;
         loopState = true;
-
         state = STATE_DEFAULT;
     }
 
@@ -140,9 +140,15 @@ public class AudioPlayerThread {
         } else{
             Log.w(TAG, "can not init AudioAttributes.");
         }
-
         mMediaPlayer.start();
-        state = STATE_PLAYING;
+        state = mMediaPlayer.isPlaying() ? STATE_PLAYING : STATE_STOP;
+        if (state == STATE_PLAYING) {
+            Log.i(TAG, "start MediaPlayer success with wav=" + mWavFilePath
+                    + ", loop=" + (loopState ? "true" : "false") + ", state=playing"
+                    + ", sessionId=" + mMediaPlayer.getAudioSessionId());
+        } else {
+            Log.e(TAG, "start MediaPlayer failed.");
+        }
         return 0;
     }
 

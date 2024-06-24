@@ -20,7 +20,6 @@ import com.aries.audiotoolkit.MainActivity;
 
 public class AudioOboeManager implements BluetoothScoCallback {
     private final static String TAG = "AudioOboeManager";
-    private static AudioOboeManager instance;
 
     public static final int DEVICES_INPUTS    = 0x0001;
     public static final int DEVICES_OUTPUTS   = 0x0002;
@@ -52,11 +51,15 @@ public class AudioOboeManager implements BluetoothScoCallback {
         System.loadLibrary("native_oboe_manager");
     }
 
-    static {
-        instance = new AudioOboeManager();
-    }
-
+    private static volatile AudioOboeManager instance = null;
     public static AudioOboeManager getInstance() {
+        if (instance == null) {
+            synchronized (AudioOboeManager.class) {
+                if (instance == null) {
+                    instance = new AudioOboeManager();
+                }
+            }
+        }
         return instance;
     }
 
@@ -138,7 +141,11 @@ public class AudioOboeManager implements BluetoothScoCallback {
         }
     }
 
-    public void setBluetoothScoProp(boolean isEnable) {
+    public boolean setBluetoothScoProp(boolean isEnable) {
+        if (!mAudioDevManager.hasBluetoothDev()) {
+            return false;
+        }
+
         btEnable = isEnable;
         if (isRunning) {
             mAudioDevManager.enableBluetoothSco(btEnable);
@@ -148,6 +155,8 @@ public class AudioOboeManager implements BluetoothScoCallback {
                 NativeUpdateDeviceId(0, mAudioDevManager.getA2dpDevId());
             }
         }
+
+        return btEnable;
     }
 
     /**
@@ -201,12 +210,12 @@ public class AudioOboeManager implements BluetoothScoCallback {
 
     @Override
     public void onScoAdded() {
-        // startBtScoAddedTimer();
+        startBtScoAddedTimer();
     }
 
     @Override
     public void onScoRemoved() {
-        // startBtScoRemovedTimer();
+        startBtScoRemovedTimer();
     }
 
     @Override
