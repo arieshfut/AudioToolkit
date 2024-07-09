@@ -1,10 +1,11 @@
 ## 下载说明
  点击上述文件列表中合适的版本，页面跳转后点击右上角raw按钮(如下图所示)即可下载。
 
- ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/download%E8%AF%B4%E6%98%8E.png)
+ ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/download.png)
 
 
 ## 版本说明
+ - audiotoolkit_debug_v1.0_20240709：修改logo及图标；
  - audiotoolkit_debug_v1.0_20240624：增加oboe播放自动切换设备，修复audio track播放bug，其他功能；
  - audiotoolkit_debug_v1.0_20240109：适配代码支持android4+(SDK 19+)；
  - audiotools_debug_v1.0_20230928：更新测试语料，移除不相关内容；

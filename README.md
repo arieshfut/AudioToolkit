@@ -4,26 +4,32 @@ AudioToolkit is a audio tool set to test audio record, play and acoustic etc on 
 
 ## 1. 工程说明
 
-AudioToolkit是音频工具集apk，apk主要包含3个界面对应工具集的三个模块
+AudioToolkit是音频工具集apk，apk主要包含4个界面对应工具集的4个模块，用于验证Android终端设备的音频基本功能；
 
-1. 基本音频功能测试：包含录音、播放、共享音频、oboe采集以及音频状态显示等，如下所示；
+## 2. 相关说明
 
-   ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E7%95%8C%E9%9D%A2.png)
+### 2.1 下载安装说明
 
-2. 音频预研测试：存放音频调研或者预研的基本功能，比如alsa采集HDMI的调研；
-
-3. 音频声学测试：存放音频声学相关测试流程或者功能，比如AEC测试的功能；
-
-
-## 2. 使用说明
-
-### 2.1 下载说明
-
- 可直接下载apk [DownLoad](./docs/apk), 详细使用说明参见[AudioToolkit使用说明](./docs/apk/README.md)
+ 可直接下载apk [DownLoad](./docs/apk), 详细下载说明参见[AudioToolkit使用说明](./docs/apk/README.md)
 
 ### 2.2 使用说明
- 
- 打开apk选择对应的界面，进行测试和验证；
+
+AudioToolkit是音频工具集apk，apk主要包含4个界面对应工具集的4个模块，可通过右上角切换对应模块，如下图示
+
+   ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/basic_ui.png)
+
+1. 基本功能：主要包含常见的音频采集播放功能、音量、音频设备、蓝牙、共享音频等等；
+   ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/first_fragment.png)
+
+2. 预研功能：主要包含oboe采集播放、alsa采集、听筒检测等调研功能；
+   ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/pre_research.png)
+
+3. 声学测试：主要包含音频声学相关测试流程或者功能，比如AEC测试等；
+   ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/account_test.png)
+
+4. 使用说明：版权声明；
+
+除此外，该apk同样适配了Android的高版本、低版本如Android4.4
 
  常见使用场景：
  1. 采集系统音频数据
@@ -51,10 +57,16 @@ AudioToolkit是音频工具集apk，apk主要包含3个界面对应工具集的�
      AEC测试和声学测试暂未实现，待后续补充功能。
 
 ## 3. 开发说明
+
+作者Android studio版本信息
+
+   ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/as_version.png)
+
+Android Studio加载工程：
 * Android studio通过settings.gradle加载当前工程；
 * 直接使用Android studio的debug功能进行调试；
 * 编译生成的apk，安装到用户Android设备上；
-* 打开apk选择对应的界面，进行测试和验证；
+* 打开apk选择对应的界面，进行测试和debug等；
 
 代码路径说明：
 1. 基本UI布局：AudioToolkit\app\src\main\java\com\aries\audiotools
