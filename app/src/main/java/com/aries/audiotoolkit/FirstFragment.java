@@ -150,6 +150,7 @@ public class FirstFragment extends Fragment {
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.i(TAG, event.toString());
                 processKeyEvent(keyCode, event);
                 return false; // 返回false，让其他的监听器继续处理事件
             }
@@ -305,6 +306,12 @@ public class FirstFragment extends Fragment {
             } else {
                 startAudioTest();
             }
+        });
+        binding.buttonVolumeDown.setOnClickListener(view1 -> {
+            mAudioModule.setVolume(false);
+        });
+        binding.buttonVolumeUp.setOnClickListener(view1 -> {
+            mAudioModule.setVolume(true);
         });
 
         // 初始化UI显示
@@ -581,7 +588,7 @@ public class FirstFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     public void updateVolume() {
-        binding.audioVolumeText.setText("Volume:" + mAudioModule.getVolumeInfo());
+        binding.audioVolumeText.setText(mAudioModule.getVolumeInfo());
     }
 
     @SuppressLint("SetTextI18n")

@@ -37,7 +37,10 @@
     <string name="needRecording">是否录音</string>
     <string name="needShare">共享音频</string>
     <string name="needPlayer">播放音频</string>
-    <string name="audioVolume">Volume：%s</string>
+    <string name="audioVolume1">Volume</string>
+    <string name="audioVolume2">%s</string>
+    <string name="audioVolumeUp">+</string>
+    <string name="audioVolumeDown">-</string>
     <string name="audioPlayMute">Mute：%s</string>
     <string name="audioLatency">Latency：%s</string>
     <string name="micList">麦克风设备</string>

@@ -234,6 +234,7 @@ int AudioStreamPlayer::start() {
                 ->setSampleRate(sampleRate)
                 ->setChannelCount(channelCount)
                 ->setDataCallback(this)
+                ->setUsage(oboe::Usage::VoiceCommunication)
                 ->openStream(mAudioStream);
         if (result == oboe::Result::OK) {
             result = mAudioStream->requestStart();

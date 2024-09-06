@@ -5,6 +5,7 @@
 
 
 ## 版本说明
+ - audiotoolkit_debug_v1.0_20240906：增加音量控制按钮；
  - audiotoolkit_debug_v1.0_20240709：修改logo及图标；
  - audiotoolkit_debug_v1.0_20240624：增加oboe播放自动切换设备，修复audio track播放bug，其他功能；
  - audiotoolkit_debug_v1.0_20240109：适配代码支持android4+(SDK 19+)；

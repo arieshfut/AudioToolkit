@@ -19,12 +19,15 @@ AudioToolkit是音频工具集apk，apk主要包含4个界面对应工具集的4
    ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/basic_ui.png)
 
 1. 基本功能：主要包含常见的音频采集播放功能、音量、音频设备、蓝牙、共享音频等等；
+
    ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/first_fragment.png)
 
 2. 预研功能：主要包含oboe采集播放、alsa采集、听筒检测等调研功能；
+
    ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/pre_research.png)
 
 3. 声学测试：主要包含音频声学相关测试流程或者功能，比如AEC测试等；
+
    ![img](https://github.com/arieshfut/AudioToolkit/blob/main/docs/imgs/account_test.png)
 
 4. 使用说明：版权声明；

@@ -441,9 +441,9 @@
             tools:ignore="UseSwitchCompatOrMaterialXml" />
     </LinearLayout>
 
-    <!-- audio volume container -->
+
     <LinearLayout
-        android:id="@+id/audioVolumeContainer"
+        android:id="@+id/audioCallContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -451,15 +451,6 @@
         android:layout_weight="1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scoSwitchContainer">
-
-        <TextView
-            android:id="@+id/audioVolumeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:text="@string/audioVolume"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toLeftOf="parent" />
 
         <TextView
             android:id="@+id/audioPlayMuteText"
@@ -484,6 +475,51 @@
             android:layout_marginStart="5dp"
             android:text="@string/audioLatency"
             app:layout_constraintLeft_toLeftOf="parent" />
+    </LinearLayout>
+
+    <!-- audio volume container -->
+    <LinearLayout
+        android:id="@+id/audioVolumeContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audioCallContainer">
+
+        <TextView
+            android:id="@+id/audioVolume1Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/audioVolume1"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+        <Button
+            android:id="@+id/button_volumeUp"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/audioVolumeUp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/audioVolumeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/audioVolume2"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <Button
+            android:id="@+id/button_volumeDown"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/audioVolumeDown"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <!-- audio mic list container -->

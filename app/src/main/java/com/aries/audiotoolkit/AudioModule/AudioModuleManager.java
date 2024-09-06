@@ -282,27 +282,7 @@ public class AudioModuleManager {
     }
 
     public String getVolumeInfo() {
-        if (audioManager == null) {
-            return "0/0";
-        }
-
-        int streamType;
-        switch (audioManager.getMode()) {
-            case AudioManager.MODE_IN_COMMUNICATION:
-                streamType = AudioManager.STREAM_VOICE_CALL;
-                break;
-            case AudioManager.MODE_RINGTONE:
-                streamType = AudioManager.STREAM_RING;
-                break;
-            case AudioManager.MODE_IN_CALL:
-                streamType = AudioManager.USE_DEFAULT_STREAM_TYPE;
-                break;
-            default:
-                streamType = AudioManager.STREAM_MUSIC;
-                break;
-        }
-
-        return audioManager.getStreamVolume(streamType) + "/" + audioManager.getStreamMaxVolume(streamType);
+        return audioVolume.getVolumeInfo();
     }
 
     public String getMuteInfo() {
@@ -330,7 +310,7 @@ public class AudioModuleManager {
                         phoneState = "Ringing";
                         break;
                     default:
-                        phoneState = " ";
+                        phoneState = "None";
                         break;
                 }
             }
@@ -339,4 +319,7 @@ public class AudioModuleManager {
         return phoneState;
     }
 
+    public void setVolume(boolean b) {
+        audioVolume.setVolumeDirect(b);
+    }
 }
