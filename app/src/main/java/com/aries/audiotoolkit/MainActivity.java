@@ -2,7 +2,6 @@ package com.aries.audiotoolkit;
 
 import android.Manifest;
 import android.content.Context;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -18,8 +17,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.aries.audiotoolkit.databinding.ActivityMainBinding;
 
 import android.os.Environment;
-
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,8 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -157,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
 
     private void requestLogPath() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
