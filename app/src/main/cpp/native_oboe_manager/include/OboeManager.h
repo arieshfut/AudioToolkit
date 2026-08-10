@@ -15,8 +15,8 @@ public:
     ~OboeManager();
 
     void setProp(std::string path, int api, bool needRecord, bool needPlay);
-    void setRecordParameter(int devId, int sample, int channel, int bit);
-    void setPlayerParameter(std::string path, int devId);
+    void setRecordParameter(int devId, int sample, int channel, int bit, int latency);
+    void setPlayerParameter(std::string path, int devId, int latency);
     bool updateDeviceId(int inputDeviceId, int outputDeviceId);
     int start();
     void stop();

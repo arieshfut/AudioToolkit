@@ -53,12 +53,12 @@ void OboeManager::setProp(std::string path, int api, bool needRecord, bool needP
     playEnable = needPlay;
 }
 
-void OboeManager::setRecordParameter(int devId, int sample, int channel, int bit) {
-    audioStreamRecorder->setParameter(recordFileDir, static_cast<oboe::AudioApi>(audioApi), devId, sample, channel, bit);
+void OboeManager::setRecordParameter(int devId, int sample, int channel, int bit, int latency) {
+    audioStreamRecorder->setParameter(recordFileDir, static_cast<oboe::AudioApi>(audioApi), devId, sample, channel, bit, latency);
 }
 
-void OboeManager::setPlayerParameter(std::string path, int devId) {
-    audioStreamPlayer->setParameter(static_cast<oboe::AudioApi>(audioApi), std::move(path), devId);
+void OboeManager::setPlayerParameter(std::string path, int devId, int latency) {
+    audioStreamPlayer->setParameter(static_cast<oboe::AudioApi>(audioApi), std::move(path), devId, latency);
 }
 
 bool OboeManager::updateDeviceId(int inputDevId, int outputDevId) {

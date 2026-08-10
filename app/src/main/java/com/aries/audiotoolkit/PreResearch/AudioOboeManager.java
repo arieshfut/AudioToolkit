@@ -30,6 +30,7 @@ public class AudioOboeManager implements BluetoothScoCallback {
     private int sampleRate = 16000;
     private int channelCount = 1;
     private int bit = 16;
+    private int latency = 10;
 
     private Context mContext;
     private final Handler handler;
@@ -84,12 +85,13 @@ public class AudioOboeManager implements BluetoothScoCallback {
         NativeSetProp(path, audioApi, needRecord, needPlay);
     }
 
-    public void setOboeParam(int devId, int sample, int channel, int b, int outputDeviceId) {
+    public void setOboeParam(int devId, int sample, int channel, int b, int outputDeviceId, int latencyMode) {
         // set Oboe Record Param(devId, sample, channel, bit);
         recordDeviceId = devId;
         sampleRate = sample;
         channelCount = channel;
         bit = b;
+        latency = latencyMode;
 
         // set Oboe Play Param(outputDeviceId);
         playFile = fileDir + "test.wav";
@@ -102,11 +104,11 @@ public class AudioOboeManager implements BluetoothScoCallback {
         }
 
         if (needRecorder) {
-            NativeOboeInitRecorder(recordDeviceId, sampleRate, channelCount, bit);
+            NativeOboeInitRecorder(recordDeviceId, sampleRate, channelCount, bit, latency);
         }
 
         if (needPlayer) {
-            NativeOboeInitPlayer(playFile, playDeviceId);
+            NativeOboeInitPlayer(playFile, playDeviceId, latency);
         }
     }
 
@@ -256,9 +258,9 @@ public class AudioOboeManager implements BluetoothScoCallback {
 
     public native void NativeUpdateDeviceId(int inputId, int outputId);
 
-    public native void NativeOboeInitRecorder(int devId, int sample, int channel, int bit);
+    public native void NativeOboeInitRecorder(int devId, int sample, int channel, int bit, int latency);
 
-    public native void NativeOboeInitPlayer(String path, int devId);
+    public native void NativeOboeInitPlayer(String path, int devId, int latency);
 
     public native int NativeOboeStart();
 

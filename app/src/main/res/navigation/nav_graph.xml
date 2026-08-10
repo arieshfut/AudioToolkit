@@ -3,70 +3,70 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/AudioBasicFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.aries.audiotoolkit.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:id="@+id/AudioBasicFragment"
+        android:name="com.aries.audiotoolkit.AudioBasicFragment"
+        android:label="@string/audio_basic_fragment_label"
+        tools:layout="@layout/fragment_audio_basic">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_AudioBasicFragment_to_PreResearchFragment"
+            app:destination="@id/PreResearchFragment" />
         <action
-            android:id="@+id/action_FirstFragment_to_ThirdFragment"
-            app:destination="@id/ThirdFragment" />
+            android:id="@+id/action_AudioBasicFragment_to_AcousticFragment"
+            app:destination="@id/AcousticFragment" />
         <action
-            android:id="@+id/action_FirstFragment_to_FourthFragment"
-            app:destination="@id/FourthFragment" />
+            android:id="@+id/action_AudioBasicFragment_to_AudioInfoFragment"
+            app:destination="@id/AudioInfoFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.aries.audiotoolkit.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        android:id="@+id/PreResearchFragment"
+        android:name="com.aries.audiotoolkit.PreResearchFragment"
+        android:label="@string/pre_research_fragment_label"
+        tools:layout="@layout/fragment_pre_research">
 
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_PreResearchFragment_to_AudioBasicFragment"
+            app:destination="@id/AudioBasicFragment" />
         <action
-            android:id="@+id/action_SecondFragment_to_ThirdFragment"
-            app:destination="@id/ThirdFragment" />
+            android:id="@+id/action_PreResearchFragment_to_AcousticFragment"
+            app:destination="@id/AcousticFragment" />
         <action
-            android:id="@+id/action_SecondFragment_to_FourthFragment"
-            app:destination="@id/FourthFragment" />
+            android:id="@+id/action_PreResearchFragment_to_AudioInfoFragment"
+            app:destination="@id/AudioInfoFragment" />
     </fragment>
     <fragment
-        android:id="@+id/ThirdFragment"
-        android:name="com.aries.audiotoolkit.ThirdFragment"
-        android:label="@string/third_fragment_label"
-        tools:layout="@layout/fragment_third">
+        android:id="@+id/AcousticFragment"
+        android:name="com.aries.audiotoolkit.AcousticFragment"
+        android:label="@string/acoustic_fragment_label"
+        tools:layout="@layout/fragment_acoustic">
 
         <action
-            android:id="@+id/action_ThirdFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_AcousticFragment_to_AudioBasicFragment"
+            app:destination="@id/AudioBasicFragment" />
         <action
-            android:id="@+id/action_ThirdFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_AcousticFragment_to_PreResearchFragment"
+            app:destination="@id/PreResearchFragment" />
         <action
-            android:id="@+id/action_ThirdFragment_to_FourthFragment"
-            app:destination="@id/FourthFragment" />
+            android:id="@+id/action_AcousticFragment_to_AudioInfoFragment"
+            app:destination="@id/AudioInfoFragment" />
     </fragment>
     <fragment
-        android:id="@+id/FourthFragment"
-        android:name="com.aries.audiotoolkit.FourthFragment"
-        android:label="@string/third_fragment_label"
-        tools:layout="@layout/fragment_third">
+        android:id="@+id/AudioInfoFragment"
+        android:name="com.aries.audiotoolkit.AudioInfoFragment"
+        android:label="@string/audio_info_fragment_label"
+        tools:layout="@layout/fragment_audio_info">
 
         <action
-            android:id="@+id/action_FourthFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_AudioInfoFragment_to_AudioBasicFragment"
+            app:destination="@id/AudioBasicFragment" />
         <action
-            android:id="@+id/action_FourthFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_AudioInfoFragment_to_PreResearchFragment"
+            app:destination="@id/PreResearchFragment" />
         <action
-            android:id="@+id/action_FourthFragment_to_ThirdFragment"
-            app:destination="@id/ThirdFragment" />
+            android:id="@+id/action_AudioInfoFragment_to_AcousticFragment"
+            app:destination="@id/AcousticFragment" />
     </fragment>
 </navigation>

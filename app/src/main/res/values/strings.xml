@@ -2,12 +2,13 @@
     <string name="app_name">AudioToolkit</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">音频基本功能</string>
+    <string name="audio_basic_fragment_label">音频基本功能</string>
     <string name="action_basic">基本功能</string>
-    <string name="second_fragment_label">音频预研功能</string>
+    <string name="pre_research_fragment_label">音频预研功能</string>
     <string name="action_pre_research">预研功能</string>
-    <string name="third_fragment_label">音频声学测试</string>
+    <string name="acoustic_fragment_label">音频声学测试</string>
     <string name="action_acoustic">声学测试</string>
+    <string name="audio_info_fragment_label">使用说明</string>
     <string name="action_about">使用说明</string>
 
     <string name="aec_state_switch">内置3A</string>
@@ -66,6 +67,7 @@
     <string name="preResearch_oboeRecordChannel">声道</string>
     <string name="preResearch_oboeRecordBit">Bit位</string>
     <string name="preResearch_oboePlayerCorpus">选择语料</string>
+    <string name="preResearch_oboeLatencyMode">时延模式</string>
     <string name="preResearch_oboeDeviceRecord">采集设备</string>
     <string name="preResearch_oboeDevicePlay">播放设备</string>
     <string name="preResearch_oboeDeviceDefault">跟随系统</string>

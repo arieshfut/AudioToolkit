@@ -16,14 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.aries.audiotoolkit.AcousticModule.AcousticManager;
-import com.aries.audiotoolkit.databinding.FragmentThirdBinding;
+import com.aries.audiotoolkit.databinding.FragmentAcousticBinding;
 
-public class ThirdFragment extends Fragment {
-    private static final String TAG = "ThirdFragment";
+public class AcousticFragment extends Fragment {
+    private static final String TAG = "AcousticFragment";
 
     private Context context;
     private AcousticManager acousticManager;
-    private FragmentThirdBinding binding;
+    private FragmentAcousticBinding binding;
     private String openFilePath;
     private ActivityResultLauncher<String[]> chooseFileLauncher;
 
@@ -42,7 +42,9 @@ public class ThirdFragment extends Fragment {
                         } else {
                             Log.i(TAG, "pathString=" + openFilePath);
                         }
-                        binding.UserCorpusTitleText.setText(openFilePath);
+                        if (openFilePath != null) {
+                            binding.UserCorpusTitleText.setText(openFilePath);
+                        }
                     }
                 });
     }
@@ -53,7 +55,7 @@ public class ThirdFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         MainActivity.preMenuOrder = 2;
-        binding = FragmentThirdBinding.inflate(inflater, container, false);
+        binding = FragmentAcousticBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }

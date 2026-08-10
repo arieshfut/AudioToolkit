@@ -80,14 +80,14 @@ public class MainActivity extends AppCompatActivity {
             switch (preMenuOrder) {
                 case 0:
                     if (order == 1) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                            .navigate(R.id.action_AudioBasicFragment_to_PreResearchFragment);
                         preMenuOrder = order;
                     } else if (order == 2) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_FirstFragment_to_ThirdFragment);
+                            .navigate(R.id.action_AudioBasicFragment_to_AcousticFragment);
                         preMenuOrder = order;
                     } else if (order == 3) {
                         Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_FirstFragment_to_FourthFragment);
+                                .navigate(R.id.action_AudioBasicFragment_to_AudioInfoFragment);
                         preMenuOrder = order;
                     } else {
                         showAbout();
@@ -95,14 +95,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 1:
                     if (order == 0) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_SecondFragment_to_FirstFragment);
+                            .navigate(R.id.action_PreResearchFragment_to_AudioBasicFragment);
                         preMenuOrder = order;
                     } else if (order == 2) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_SecondFragment_to_ThirdFragment);
+                            .navigate(R.id.action_PreResearchFragment_to_AcousticFragment);
                         preMenuOrder = order;
                     } else if (order == 3) {
                         Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_SecondFragment_to_FourthFragment);
+                                .navigate(R.id.action_PreResearchFragment_to_AudioInfoFragment);
                         preMenuOrder = order;
                     } else {
                         showAbout();
@@ -110,14 +110,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 2:
                     if (order == 0) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_ThirdFragment_to_FirstFragment);
+                            .navigate(R.id.action_AcousticFragment_to_AudioBasicFragment);
                         preMenuOrder = order;
                     } else if (order == 1) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_ThirdFragment_to_SecondFragment);
+                            .navigate(R.id.action_AcousticFragment_to_PreResearchFragment);
                         preMenuOrder = order;
                     } else if (order == 3) {
                         Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_ThirdFragment_to_FourthFragment);
+                                .navigate(R.id.action_AcousticFragment_to_AudioInfoFragment);
                         preMenuOrder = order;
                     } else {
                         showAbout();
@@ -125,14 +125,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 3:
                     if (order == 0) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_FourthFragment_to_FirstFragment);
+                            .navigate(R.id.action_AudioInfoFragment_to_AudioBasicFragment);
                         preMenuOrder = order;
                     } else if (order == 1) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_FourthFragment_to_SecondFragment);
+                            .navigate(R.id.action_AudioInfoFragment_to_PreResearchFragment);
                         preMenuOrder = order;
                     } else if (order == 2) {
                         Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_FourthFragment_to_ThirdFragment);
+                                .navigate(R.id.action_AudioInfoFragment_to_AcousticFragment);
                         preMenuOrder = order;
                     } else {
                         showAbout();

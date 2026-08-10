@@ -10,14 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.aries.audiotoolkit.databinding.FragmentFourthBinding;
+import com.aries.audiotoolkit.databinding.FragmentAudioInfoBinding;
 
 
-public class FourthFragment extends Fragment {
-    private static final String TAG = "FourthFragment";
+public class AudioInfoFragment extends Fragment {
+    private static final String TAG = "AudioInfoFragment";
 
     private Context context;
-    private FragmentFourthBinding binding;
+    private FragmentAudioInfoBinding binding;
 
     // mrtc auto test
     private boolean isStarting = false;

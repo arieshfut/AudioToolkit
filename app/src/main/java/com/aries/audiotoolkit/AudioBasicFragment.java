@@ -29,16 +29,16 @@ import androidx.fragment.app.Fragment;
 
 import com.aries.audiotoolkit.AudioModule.AudioModuleManager;
 import com.aries.audiotoolkit.common.WaveFile;
-import com.aries.audiotoolkit.databinding.FragmentFirstBinding;
+import com.aries.audiotoolkit.databinding.FragmentAudioBasicBinding;
 
 import java.util.List;
 import java.util.Objects;
 
-public class FirstFragment extends Fragment {
-    private final static String TAG = "FirstFragment";
+public class AudioBasicFragment extends Fragment {
+    private final static String TAG = "AudioBasicFragment";
 
     private Context context;
-    private FragmentFirstBinding binding;
+    private FragmentAudioBasicBinding binding;
     private AudioBroadcastReceiver audioBroadcastReceiver;
     private ActivityResultLauncher<String[]> chooseWavLauncher;
 
@@ -99,7 +99,7 @@ public class FirstFragment extends Fragment {
                 result -> {
                     if (result != null) {
                         String wavPath = UriUtil.getPath(context, result);
-                        if (WaveFile.isWavFileExist(wavPath)) {
+                        if (wavPath != null && WaveFile.isWavFileExist(wavPath)) {
                             externalWavPath = wavPath;
                             playAssetFile = false;
                         } else {
@@ -131,7 +131,7 @@ public class FirstFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         MainActivity.preMenuOrder = 0;
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentAudioBasicBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }

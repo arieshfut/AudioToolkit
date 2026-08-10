@@ -1,6 +1,7 @@
 package com.aries.audiotoolkit;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,22 +14,21 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.aries.audiotoolkit.PreResearch.PreResearchManager;
-import com.aries.audiotoolkit.databinding.FragmentSecondBinding;
+import com.aries.audiotoolkit.databinding.FragmentPreResearchBinding;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SecondFragment extends Fragment {
-    private static final String TAG = "SecondFragment";
+public class PreResearchFragment extends Fragment {
+    private static final String TAG = "PreResearchFragment";
     private static final long UPDATE_LATENCY_EVERY_MILLIS = 1000;
 
     private boolean isAlsaStart = false;
     private boolean isOboeStart = false;
     private Context context;
     private PreResearchManager preResearch = null;
-    private FragmentSecondBinding binding;
+    private FragmentPreResearchBinding binding;
     private Timer mLatencyUpdater;
 
     @Override
@@ -45,16 +45,18 @@ public class SecondFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         MainActivity.preMenuOrder = 1;
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        binding = FragmentPreResearchBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
 
+    @SuppressLint("SetTextI18n")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         context = MainActivity.getContext();
         preResearch = PreResearchManager.getInstance();
 
+        binding.audioRecordPathText.setText("录音文件：" + MainActivity.getDumpPath());
         binding.buttonEarpieceMonitor.setOnClickListener(v -> MainActivity.showToast("该功能建设中"));
 
         binding.alsaSampleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -91,6 +93,7 @@ public class SecondFragment extends Fragment {
         binding.oboeRecordBitSpinner.setSelection(0);     // 16bit
         binding.oboeDeviceRecordSpinner.setSelection(0);     // 默认采集设备跟随系统
         binding.oboeDevicePlaySpinner.setSelection(0);     // 默认播放设备跟随系统
+        binding.oboeLatencyModeSpinner.setSelection(2);     // 默认低时延模式
 
         binding.buttonOboeTest.setOnClickListener(v -> {
             if (binding.oboeRecordSwitch.isChecked() ||
@@ -163,6 +166,7 @@ public class SecondFragment extends Fragment {
         int channel = binding.oboeChannelCountSpinner.getSelectedItemPosition();
         int bit = (binding.alsaBitSpinner.getSelectedItemPosition() + 1) * 16;
         int playDeviceId = binding.oboeDevicePlaySpinner.getSelectedItemPosition();
+        int latencyMode = binding.oboeLatencyModeSpinner.getSelectedItemPosition();
 
         switch (sample) {
             case 0:
@@ -202,10 +206,21 @@ public class SecondFragment extends Fragment {
                 channel = 2;
                 break;
         }
+        switch (latencyMode) {
+            case 1:
+                latencyMode = 11;
+                break;
+            case 2:
+                latencyMode = 12;
+                break;
+            default:
+                latencyMode = 10;
+                break;
+        }
         boolean needRecord = binding.oboeRecordSwitch.isChecked();
         boolean needPlay = binding.oboePlayerSwitch.isChecked();
         boolean enableBluetooth = binding.oboeBluetoothSwitch.isChecked();
-        preResearch.setOboeParameter(audioApi, needRecord, needPlay, recordDeviceId, sample, channel, bit, playDeviceId, enableBluetooth);
+        preResearch.setOboeParameter(audioApi, needRecord, needPlay, recordDeviceId, sample, channel, bit, playDeviceId, enableBluetooth, latencyMode);
     }
 
     private void setAlsaParameter() {
