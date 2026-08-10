@@ -73,27 +73,27 @@ public class AcousticFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        binding.buttonUserCorpus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String[] fileType = {"*/*"};
-                chooseFileLauncher.launch(fileType);
-            }
-        });
-
-        binding.buttonAcousticMonitor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.showToast("该功能建设中");
-            }
-        });
-
-        binding.buttonAecTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.showToast("该功能建设中");
-            }
-        });
+//        binding.buttonUserCorpus.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String[] fileType = {"*/*"};
+//                chooseFileLauncher.launch(fileType);
+//            }
+//        });
+//
+//        binding.buttonAcousticMonitor.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                MainActivity.showToast("该功能建设中");
+//            }
+//        });
+//
+//        binding.buttonAecTest.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                MainActivity.showToast("该功能建设中");
+//            }
+//        });
     }
 
     public void releaseSource() {
