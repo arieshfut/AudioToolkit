@@ -45,7 +45,7 @@ class AudioStreamRecorder : public OboeAudioStream {
 public:
     AudioStreamRecorder();
     ~AudioStreamRecorder() = default;
-    void setParameter(std::string recordDir, oboe::AudioApi api, int devId, int sample, int channel, int bit);
+    void setParameter(std::string recordDir, oboe::AudioApi api, int devId, int sample, int channel, int bit, int latency);
     int start() override;
     void stop() override;
     bool restart() override;
@@ -61,7 +61,7 @@ class AudioStreamPlayer : public OboeAudioStream {
 public:
     AudioStreamPlayer();
     ~AudioStreamPlayer() = default;
-    void setParameter(oboe::AudioApi api, std::string path, int devId);
+    void setParameter(oboe::AudioApi api, std::string path, int devId, int latency);
     int start() override;
     void stop() override;
     bool restart() override;

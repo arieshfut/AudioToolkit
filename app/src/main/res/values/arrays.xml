@@ -69,6 +69,12 @@
         <item>其他</item>
     </string-array>
 
+    <string-array name="oboeLatencyModeArray">
+        <item>@string/preResearch_oboeDeviceDefault</item>
+        <item>省点模式</item>
+        <item>低时延模式</item>
+    </string-array>
+
     <string-array name="earpieceParameterArray">
         <item>Default</item>
         <item>0.1</item>

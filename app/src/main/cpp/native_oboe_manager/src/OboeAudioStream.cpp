@@ -29,12 +29,28 @@ oboe::AudioFormat bitToFormat(int bit) {
     return format;
 }
 
+oboe::PerformanceMode latencyToPerform(int latency) {
+    oboe::PerformanceMode perform;
+    switch (latency) {
+        case 11:
+            perform = oboe::PerformanceMode::PowerSaving;
+            break;
+        case 12:
+            perform = oboe::PerformanceMode::LowLatency;
+            break;
+        default:
+            perform = oboe::PerformanceMode::None;
+            break;
+    }
+    return perform;
+}
+
 OboeAudioStream::OboeAudioStream() :
         mAudioStream(nullptr),
         audioApi(oboe::AudioApi::Unspecified),
         deviceId(DEFAULT_OBOE_DEVICE_ID),
         shareMode(oboe::SharingMode::Shared),
-        perform(oboe::PerformanceMode::LowLatency),
+        perform(oboe::PerformanceMode::None),
         srcLevel(oboe::SampleRateConversionQuality::Medium),
         format(oboe::AudioFormat::I16),
         sampleRate(DEFAULT_OBOE_SAMPLERATE),
@@ -81,12 +97,13 @@ AudioStreamRecorder::AudioStreamRecorder() : OboeAudioStream() {
 }
 
 void
-AudioStreamRecorder::setParameter(std::string recordDir, oboe::AudioApi api, int devId, int sample, int channel, int bit) {
+AudioStreamRecorder::setParameter(std::string recordDir, oboe::AudioApi api, int devId, int sample, int channel, int bit, int latency) {
     audioApi = api;
     deviceId = devId;
     format = bitToFormat(bit);
     sampleRate = sample;
     channelCount = channel;
+    perform = latencyToPerform(latency);
 
     recordFileDir = std::move(recordDir);
     wavFile->setParam(recordFileDir, "oboe", sampleRate, channelCount, bit);
@@ -104,7 +121,7 @@ int AudioStreamRecorder::start() {
             ->setDirection(oboe::Direction::Input)
             ->setSharingMode(shareMode)
             ->setPerformanceMode(perform)
-            ->setInputPreset(oboe::InputPreset::Unprocessed)
+            ->setInputPreset(oboe::InputPreset::Generic)
             // ->setSampleRateConversionQuality(srcLevel)
             ->setDeviceId(deviceId)
             ->setFormat(format)
@@ -121,12 +138,14 @@ int AudioStreamRecorder::start() {
         } else {
             mIsLatencyDetectionSupported = (mAudioStream->getTimestamp((CLOCK_MONOTONIC)) !=
                                             oboe::Result::ErrorUnimplemented);
-            ALOGI("AudioStreamRecorder AudioApi=%s, Direction=Output, Sharing=%d, DeviceId=%d, sample=%d, channels=%d, bit=%d, BufferSize=%d",
+            ALOGI("AudioStreamRecorder AudioApi=%s, Direction=Input, Sharing=%d, DeviceId=%d, sample=%d, channels=%d, bit=%d, BufferSize=%d",
                   mAudioStream->getAudioApi() == oboe::AudioApi::OpenSLES ? "OpenSLES" : "AAudio",
                   mAudioStream->getSharingMode(), mAudioStream->getDeviceId(),
                   mAudioStream->getSampleRate(), mAudioStream->getChannelCount(),
                   mAudioStream->getBytesPerSample() * 8, mAudioStream->getBufferSizeInFrames());
         }
+    } else {
+        ALOGE("Error starting record stream. Error: %s", oboe::convertToText(result));
     }
     count = 0;
     state = (result == oboe::Result::OK ? STATE_START : STATE_ERROR);
@@ -199,11 +218,12 @@ AudioStreamPlayer::AudioStreamPlayer() : OboeAudioStream() {
     mPhaseIncrement = kFrequent * kTwoPi / (double) sampleRate;
 }
 
-void AudioStreamPlayer::setParameter(oboe::AudioApi api, std::string path, int devId) {
+void AudioStreamPlayer::setParameter(oboe::AudioApi api, std::string path, int devId, int latency) {
     audioApi = api;
     playFile = std::move(path);
     deviceId = devId;
     restartCount = 0;
+    perform = latencyToPerform(latency);
 
     state = STATE_INIT;
 }
@@ -234,7 +254,7 @@ int AudioStreamPlayer::start() {
                 ->setSampleRate(sampleRate)
                 ->setChannelCount(channelCount)
                 ->setDataCallback(this)
-                ->setUsage(oboe::Usage::VoiceCommunication)
+                // ->setUsage(oboe::Usage::VoiceCommunication)
                 ->openStream(mAudioStream);
         if (result == oboe::Result::OK) {
             result = mAudioStream->requestStart();

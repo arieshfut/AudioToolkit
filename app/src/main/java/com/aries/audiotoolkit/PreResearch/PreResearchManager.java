@@ -51,9 +51,9 @@ public class PreResearchManager {
         }
     }
 
-    public void setOboeParameter(int api, boolean needRecord, boolean needPlay, int inputDevId, int sample, int channel, int bit, int outputDev, boolean btEnable) {
+    public void setOboeParameter(int api, boolean needRecord, boolean needPlay, int inputDevId, int sample, int channel, int bit, int outputDev, boolean btEnable, int latencyMode) {
         audioOboe.setOboeProp(api, needRecord, needPlay, btEnable);
-        audioOboe.setOboeParam(inputDevId, sample, channel, bit, outputDev);
+        audioOboe.setOboeParam(inputDevId, sample, channel, bit, outputDev, latencyMode);
     }
 
     public boolean setBluetoothScoProp(boolean btEnable) {

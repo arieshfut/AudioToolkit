@@ -256,7 +256,7 @@ public class WaveFile {
     }
 
     public static boolean isWavFileExist(String filePath) {
-        if (!isFileExist(filePath) || !filePath.endsWith(".wav")) {
+        if (filePath == null || !isFileExist(filePath) || !filePath.endsWith(".wav")) {
             Log.e(TAG, filePath + " not exist.");
             return false;
         }

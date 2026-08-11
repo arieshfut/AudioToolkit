@@ -63,8 +63,9 @@ Java_com_aries_audiotoolkit_PreResearch_AudioOboeManager_NativeOboeInitRecorder(
                                                                                      jint dev_id,
                                                                                      jint sample,
                                                                                      jint channel,
-                                                                                     jint bit) {
-    oboeManager->setRecordParameter(dev_id, sample, channel, bit);
+                                                                                     jint bit,
+                                                                                     jint latency) {
+    oboeManager->setRecordParameter(dev_id, sample, channel, bit, latency);
     ALOGI("NativeOboeInitRecorder done.");
 }
 
@@ -73,10 +74,11 @@ JNIEXPORT void JNICALL
 Java_com_aries_audiotoolkit_PreResearch_AudioOboeManager_NativeOboeInitPlayer(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jstring path,
-                                                                                   jint dev_id) {
+                                                                                   jint dev_id,
+                                                                                   jint latency) {
     std::string file_path;
     JstingToCstring(env, file_path, path);
-    oboeManager->setPlayerParameter(file_path, dev_id);
+    oboeManager->setPlayerParameter(file_path, dev_id, latency);
     ALOGI("NativeOboeInitPlayer done.");
 }
 

@@ -11,7 +11,7 @@ android {
         minSdk 19
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.1.0"
         buildConfigField "boolean","NEED_AUDIO_TEST","${NEED_AUDIO_TEST}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -26,10 +26,20 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file("D:\\workspace\\tools\\AudioToolkit\\audiotoolkit.jks")
+            storePassword "87c30b40"
+            keyAlias "audiotoolkit_release_key"
+            keyPassword "87c30b40"
+        }
+    }
+
     buildTypes {
         release {
-            debuggable true
+            debuggable false
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //修改生成的apk名字
             def date = new Date().format("yyyyMMdd" , TimeZone.getTimeZone("GMT+08"))
@@ -66,8 +76,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         viewBinding true
