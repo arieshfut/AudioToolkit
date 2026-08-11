@@ -26,10 +26,20 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file("D:\\workspace\\tools\\AudioToolkit\\audiotoolkit.jks")
+            storePassword "87c30b40"
+            keyAlias "audiotoolkit_release_key"
+            keyPassword "87c30b40"
+        }
+    }
+
     buildTypes {
         release {
             debuggable false
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //修改生成的apk名字
             def date = new Date().format("yyyyMMdd" , TimeZone.getTimeZone("GMT+08"))

@@ -2,12 +2,14 @@ package com.aries.audiotoolkit;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ import android.widget.Switch;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.aries.audiotoolkit.AudioModule.AudioModuleManager;
@@ -592,8 +596,12 @@ public class AudioBasicFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    public void updatePhoneState() {
-        binding.audioCallText.setText("通话状态:" + mAudioModule.getPhoneState());
+    private void updatePhoneState() {
+        if (hasPhoneStatePermission()) {
+            binding.audioCallText.setText("通话状态:" + mAudioModule.getPhoneState());
+        } else {
+            binding.audioCallText.setText("通话状态:");
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -654,6 +662,11 @@ public class AudioBasicFragment extends Fragment {
         info.append(", action=").append(event.getAction() == KeyEvent.ACTION_DOWN ? "down" : "up");
         info.append("]");
         MainActivity.showToast(info.toString());
+    }
+
+    public boolean hasPhoneStatePermission() {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
 }
