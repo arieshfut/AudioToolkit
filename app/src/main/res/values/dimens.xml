@@ -1,3 +1,23 @@
 <resources>
+    <!-- MD2 spacing grid (4dp base) -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+
+    <!-- Card -->
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_content_padding">16dp</dimen>
+
+    <!-- Section -->
+    <dimen name="section_spacing">12dp</dimen>
+
+    <!-- Row item -->
+    <dimen name="row_min_height">48dp</dimen>
+    <dimen name="row_spacing">4dp</dimen>
+
+    <!-- FAB -->
     <dimen name="fab_margin">16dp</dimen>
 </resources>

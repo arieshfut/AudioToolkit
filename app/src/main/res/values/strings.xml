@@ -84,7 +84,8 @@
     <string name="preResearch_alsaCapture">开始ALSA采集</string>
 
     <string name="toolkit_info">音频工具箱</string>
-    <string name="toolkit_version">版本：1.1.0\n版权：Aries\n声明：允许随意引用及修改，但禁止商用</string>
+    <string name="toolkit_version">版本：1.1.0</string>
+    <string name="toolkit_des">作者：Aries\n声明：允许随意引用及修改，但禁止商用</string>
 
     <string name="only_supported_on_api_26">Only supported in AAudio (API 26+)</string>
 </resources>

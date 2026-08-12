@@ -134,7 +134,6 @@ public class AudioBasicFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        MainActivity.preMenuOrder = 0;
         binding = FragmentAudioBasicBinding.inflate(inflater, container, false);
 
         return binding.getRoot();

@@ -71,7 +71,7 @@
 
     <string-array name="oboeLatencyModeArray">
         <item>@string/preResearch_oboeDeviceDefault</item>
-        <item>省点模式</item>
+        <item>省电模式</item>
         <item>低时延模式</item>
     </string-array>
 
