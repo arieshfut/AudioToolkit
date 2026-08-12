@@ -54,7 +54,6 @@ public class AcousticFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        MainActivity.preMenuOrder = 2;
         binding = FragmentAcousticBinding.inflate(inflater, container, false);
         return binding.getRoot();
 

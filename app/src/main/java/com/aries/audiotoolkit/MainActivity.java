@@ -4,30 +4,32 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.aries.audiotoolkit.databinding.ActivityMainBinding;
 
 import android.os.Environment;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -42,17 +44,12 @@ public class MainActivity extends AppCompatActivity {
     public final static boolean needAudioTest = BuildConfig.NEED_AUDIO_TEST;
 
     private static Context context;
-    private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-    public static int preMenuOrder = 0;
-    private boolean isNavReady = false;
 
-    private LinearLayout permissionLayout;
-    private TextView permissionStatusText;
-    private Button requestPermissionButton;
-    private LinearLayout permissionListLayout;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
 
-    private List<String[]> allPermissionList = null;
+    private static List<String[]> sAllPermissionList = null;
 
     // create dump file path
     public static String dumpPath = null;
@@ -70,229 +67,134 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        permissionLayout = findViewById(R.id.permissionLayout);
-        permissionStatusText = findViewById(R.id.permissionStatusText);
-        requestPermissionButton = findViewById(R.id.requestPermissionButton);
-        permissionListLayout = findViewById(R.id.permissionListLayout);
+        setupToolbarIcon();
 
         initAllPermission();
-        updatePermissionStatusUI();
 
-        requestPermissionButton.setOnClickListener(v -> requestAppPermissions());
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
 
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText("关于");
+                    break;
+                case 1:
+                    tab.setText("基本功能");
+                    break;
+                case 2:
+                    tab.setText("预研");
+                    break;
+                case 3:
+                    tab.setText("声学");
+                    break;
+            }
+        }).attach();
+
+        // 默认展示tab
         if (allPermissionsGranted()) {
-            setupNavigation();
+            viewPager.setCurrentItem(1, false); // 默认展示tab2: 基本功能
         } else {
-            findViewById(R.id.nav_host_fragment_content_main).setVisibility(View.GONE);
+            viewPager.setCurrentItem(0, false); // 默认展示tab1: 关于
         }
+
+        // 拦截所有页面切换（滑动+Tab点击），在滚动完全停止后检查，避免平滑滚动中断导致的重复回调
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                    if (!allPermissionsGranted() && viewPager.getCurrentItem() != 0) {
+                        showToast("请您优先申请全部权限");
+                        viewPager.setCurrentItem(0, false);
+                    }
+                }
+            }
+        });
     }
 
-    private void setupNavigation() {
-        Log.d(TAG, "setupNavigation start");
-        isNavReady = true;
-        permissionLayout.setVisibility(View.GONE);
-        findViewById(R.id.nav_host_fragment_content_main).setVisibility(View.VISIBLE);
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    private void setupToolbarIcon() {
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        binding.toolbarTitle.post(() -> {
+            int size = binding.toolbarTitle.getHeight();
+            if (size <= 0) return;
+
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, size, size, true);
+            Bitmap circle = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(circle);
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            float radius = size / 2f;
+            canvas.drawCircle(radius, radius, radius, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(scaled, 0, 0, paint);
+
+            binding.toolbarIcon.setImageBitmap(circle);
+        });
     }
 
     private void initAllPermission() {
-        if (allPermissionList != null) {
+        if (sAllPermissionList != null) {
             return;
         }
 
-        allPermissionList = new ArrayList<>();
-
-        /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            allPermissionList.add(new String[]{"读媒体图片", Manifest.permission.READ_MEDIA_IMAGES});
-            allPermissionList.add(new String[]{"读媒体视频", Manifest.permission.READ_MEDIA_VIDEO});
-            allPermissionList.add(new String[]{"读媒体音频", Manifest.permission.READ_MEDIA_AUDIO});
-        } else {
-            allPermissionList.add(new String[]{"读存储", Manifest.permission.READ_EXTERNAL_STORAGE});
-            allPermissionList.add(new String[]{"写存储", Manifest.permission.WRITE_EXTERNAL_STORAGE});
-        }*/
+        sAllPermissionList = new ArrayList<>();
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
-            allPermissionList.add(new String[]{"写存储", Manifest.permission.WRITE_EXTERNAL_STORAGE});
+            sAllPermissionList.add(new String[]{"写存储", Manifest.permission.WRITE_EXTERNAL_STORAGE});
         }
 
         // API Level >= 23
-        allPermissionList.add(new String[]{"相机", Manifest.permission.CAMERA});
-        allPermissionList.add(new String[]{"录音", Manifest.permission.RECORD_AUDIO});
-        allPermissionList.add(new String[]{"电话状态", Manifest.permission.READ_PHONE_STATE});
+        sAllPermissionList.add(new String[]{"相机", Manifest.permission.CAMERA});
+        sAllPermissionList.add(new String[]{"录音", Manifest.permission.RECORD_AUDIO});
+        sAllPermissionList.add(new String[]{"电话状态", Manifest.permission.READ_PHONE_STATE});
 
         // API Level >= 29
         if (Build.VERSION.SDK_INT >= 29) {
-            allPermissionList.add(new String[]{"后台服务", Manifest.permission.FOREGROUND_SERVICE});
+            sAllPermissionList.add(new String[]{"后台服务", Manifest.permission.FOREGROUND_SERVICE});
         }
         // API Level >= 31
         if (Build.VERSION.SDK_INT >= 31) {
-            allPermissionList.add(new String[]{"蓝牙扫描", "android.permission.BLUETOOTH_SCAN"});
-            allPermissionList.add(new String[]{"蓝牙连接", "android.permission.BLUETOOTH_CONNECT"});
+            sAllPermissionList.add(new String[]{"蓝牙扫描", "android.permission.BLUETOOTH_SCAN"});
+            sAllPermissionList.add(new String[]{"蓝牙连接", "android.permission.BLUETOOTH_CONNECT"});
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private void updatePermissionStatusUI() {
-        boolean allGranted = allPermissionsGranted();
-        permissionStatusText.setText("全部权限已同意: " + (allGranted ? "是" : "否"));
-        permissionStatusText.setTextColor(allGranted ? 0xFF2E7D32 : 0xFFE65100);
-
-        permissionListLayout.removeAllViews();
-        permissionListLayout.setVisibility(allGranted ? View.GONE : View.VISIBLE);
-
-        if (!allGranted) {
-            for (String[] entry : allPermissionList) {
-                String name = entry[0];
-                String perm = entry[1];
-                boolean granted = ContextCompat.checkSelfPermission(this, perm)
-                        == PackageManager.PERMISSION_GRANTED;
-
-                TextView tv = new TextView(this);
-                tv.setText(name + ": " + (granted ? "已同意" : "未同意"));
-                tv.setTextColor(granted ? 0xFF2E7D32 : 0xFFD32F2F);
-                tv.setTextSize(12);
-                tv.setPadding(0, 2, 0, 2);
-                permissionListLayout.addView(tv);
-            }
-        }
+    public static List<String[]> getAllPermissionList() {
+        return sAllPermissionList;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int order = item.getOrder();
-
-        //noinspection SimplifiableIfStatement
-        if (preMenuOrder != order) {
-            switch (preMenuOrder) {
-                case 0:
-                    if (order == 1) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_AudioBasicFragment_to_PreResearchFragment);
-                        preMenuOrder = order;
-                    } else if (order == 2) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_AudioBasicFragment_to_AcousticFragment);
-                        preMenuOrder = order;
-                    } else if (order == 3) {
-                        Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_AudioBasicFragment_to_AudioInfoFragment);
-                        preMenuOrder = order;
-                    } else {
-                        showAbout();
-                    }
-                    break;
-                case 1:
-                    if (order == 0) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_PreResearchFragment_to_AudioBasicFragment);
-                        preMenuOrder = order;
-                    } else if (order == 2) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_PreResearchFragment_to_AcousticFragment);
-                        preMenuOrder = order;
-                    } else if (order == 3) {
-                        Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_PreResearchFragment_to_AudioInfoFragment);
-                        preMenuOrder = order;
-                    } else {
-                        showAbout();
-                    }
-                    break;
-                case 2:
-                    if (order == 0) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_AcousticFragment_to_AudioBasicFragment);
-                        preMenuOrder = order;
-                    } else if (order == 1) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_AcousticFragment_to_PreResearchFragment);
-                        preMenuOrder = order;
-                    } else if (order == 3) {
-                        Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_AcousticFragment_to_AudioInfoFragment);
-                        preMenuOrder = order;
-                    } else {
-                        showAbout();
-                    }
-                    break;
-                case 3:
-                    if (order == 0) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_AudioInfoFragment_to_AudioBasicFragment);
-                        preMenuOrder = order;
-                    } else if (order == 1) { Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                            .navigate(R.id.action_AudioInfoFragment_to_PreResearchFragment);
-                        preMenuOrder = order;
-                    } else if (order == 2) {
-                        Navigation.findNavController(this, R.id.nav_host_fragment_content_main)
-                                .navigate(R.id.action_AudioInfoFragment_to_AcousticFragment);
-                        preMenuOrder = order;
-                    } else {
-                        showAbout();
-                    }
-                    break;
-                default:
-                    showAbout();
-                    break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-
-    private void requestLogPath() {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            String filePath = Environment.getExternalStorageDirectory().toString() + "/audiotoolkit";
-            dumpPath = filePath;
-            boolean flags = true;
-            try {
-                File file = new File(filePath);
-                if (!file.exists()) {
-                    flags = file.mkdirs();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "create Dump dir=" + filePath + " with exception " + e);
-                flags = false;
-            }
-            Log.i(TAG, "Create dir=" + flags + ", filePath=" + filePath);
-        } else {
-            dumpPath = Objects.requireNonNull(MainActivity.getContext().getExternalFilesDir(null)).getAbsolutePath();
-        }
-    }
-
-    public static String getDumpPath() {
-        Log.d(TAG, "getDumpPath: " + dumpPath);
-        return dumpPath;
-    }
-
-    private void requestAppPermissions() {
-        String[] allPermission = new String[allPermissionList.size()];
-        for (int i = 0; i < allPermissionList.size(); ++i) {
-            String[] entry = allPermissionList.get(i);
-            allPermission[i] = entry[1];
-        }
-        ActivityCompat.requestPermissions(this, allPermission, 1);
-    }
-
-    private boolean allPermissionsGranted() {
-        for (String[] entry : allPermissionList) {
-            if (ContextCompat.checkSelfPermission(this, entry[1])
+    public static boolean hasAllPermissions(Context ctx) {
+        if (sAllPermissionList == null) return true;
+        for (String[] entry : sAllPermissionList) {
+            if (ContextCompat.checkSelfPermission(ctx, entry[1])
                     != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean allPermissionsGranted() {
+        return hasAllPermissions(this);
+    }
+
+    public void requestAppPermissions() {
+        String[] allPermission = new String[sAllPermissionList.size()];
+        for (int i = 0; i < sAllPermissionList.size(); ++i) {
+            String[] entry = sAllPermissionList.get(i);
+            allPermission[i] = entry[1];
+        }
+        ActivityCompat.requestPermissions(this, allPermission, 1);
+    }
+
+    public void navigateToTab(int position) {
+        if (viewPager != null) {
+            viewPager.setCurrentItem(position);
+        }
     }
 
     @Override
@@ -305,10 +207,21 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, permissions[i] + (granted ? " granted" : " denied"));
             }
 
-            updatePermissionStatusUI();
+            // 通知AudioInfoFragment更新权限UI
+            notifyAudioInfoFragment();
 
-            if (!isNavReady && allPermissionsGranted()) {
-                setupNavigation();
+            // 如果所有权限都已同意，切换到tab2
+            if (allPermissionsGranted()) {
+                viewPager.setCurrentItem(1);
+            }
+        }
+    }
+
+    private void notifyAudioInfoFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment f : fragments) {
+            if (f instanceof AudioInfoFragment) {
+                ((AudioInfoFragment) f).updatePermissionUI();
             }
         }
     }
@@ -338,5 +251,58 @@ public class MainActivity extends AppCompatActivity {
         String info = "音频工具箱\n";
         info += R.string.toolkit_version;
         showToast(info);
+    }
+
+    private void requestLogPath() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            String filePath = Environment.getExternalStorageDirectory().toString() + "/audiotoolkit";
+            dumpPath = filePath;
+            boolean flags = true;
+            try {
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    flags = file.mkdirs();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "create Dump dir=" + filePath + " with exception " + e);
+                flags = false;
+            }
+            Log.i(TAG, "Create dir=" + flags + ", filePath=" + filePath);
+        } else {
+            dumpPath = Objects.requireNonNull(MainActivity.getContext().getExternalFilesDir(null)).getAbsolutePath();
+        }
+    }
+
+    public static String getDumpPath() {
+        Log.d(TAG, "getDumpPath: " + dumpPath);
+        return dumpPath;
+    }
+
+    private static class ViewPagerAdapter extends FragmentStateAdapter {
+        public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            switch (position) {
+                case 0:
+                    return new AudioInfoFragment();
+                case 1:
+                    return new AudioBasicFragment();
+                case 2:
+                    return new PreResearchFragment();
+                case 3:
+                    return new AcousticFragment();
+                default:
+                    return new AudioBasicFragment();
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return 4;
+        }
     }
 }

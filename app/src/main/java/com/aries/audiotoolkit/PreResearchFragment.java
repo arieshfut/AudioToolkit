@@ -44,7 +44,6 @@ public class PreResearchFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        MainActivity.preMenuOrder = 1;
         binding = FragmentPreResearchBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
