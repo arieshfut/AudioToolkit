@@ -10,7 +10,7 @@ AudioToolkit是音频工具集apk，apk主要包含4个界面对应工具集的4
 
 ### 2.1 下载安装说明
 
- 可直接下载apk [DownLoad](./docs/apk), 详细下载说明参见[AudioToolkit使用说明](./docs/apk/README.md)
+ 可直接下载apk [DownLoad](./releases/tag/v1.1.2), 详细下载说明参见[AudioToolkit使用说明](./docs/apk/README.md)
 
 ### 2.2 使用说明
 
